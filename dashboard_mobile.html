@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MarketMind | Dashboard</title>
+    <link rel="stylesheet" href="css/mobile_v2.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="js/device_detector.js" defer></script>
+    <style>
+        .hero-section {
+            padding: 40px 20px;
+            text-align: left;
+            background: radial-gradient(circle at top right, rgba(59, 130, 246, 0.15), transparent);
+        }
+
+        .hero-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff 0%, var(--text-secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            color: var(--neon-blue);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            padding: 16px;
+        }
+
+        .stat-value {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+
+        .quick-action {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            text-decoration: none;
+            color: white;
+        }
+
+        .action-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Bar -->
+    <div class="mobile-top-bar">
+        <a href="dashboard_mobile.html" class="logo" style="font-size: 1.1rem;">
+            <span style="font-family: 'Space Grotesk'; font-weight: 700;">MARKET</span><span
+                style="color: var(--text-secondary);">MIND</span>
+        </a>
+        <a href="pages/profile_mobile.html" class="top-profile-btn">
+            <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile"
+                loading="lazy">
+        </a>
+    </div>
+
+    <div class="mobile-container" style="padding-top: 80px;">
+        <!-- Hero -->
+        <header class="hero-section">
+            <div class="hero-subtitle">Agentic Horizon</div>
+            <h1 class="hero-title">MARKET<br>MIND</h1>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 12px;">
+                Real-time AI simulations of global market shifts and causal impact.
+            </p>
+        </header>
+
+        <!-- Contributors -->
+        <div class="section-header">
+            <h2 class="section-title">CONTRIBUTORS</h2>
+        </div>
+        <div class="contributors-row">
+            <div class="contributor-card" style="flex: 0 0 100px;" onclick="openMobileModal('modal-adharva')">
+                <div class="contributor-avatar"
+                    style="background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple)); color: white;">A
+                </div>
+                <div class="contributor-name">Adharva Shine</div>
+                <div style="font-size: 0.5rem; color: var(--text-secondary);">AI & API</div>
+            </div>
+            <div class="contributor-card" style="flex: 0 0 100px;" onclick="openMobileModal('modal-satyam')">
+                <div class="contributor-avatar"
+                    style="background: linear-gradient(135deg, #8b5cf6, #22d3ee); color: white;">S</div>
+                <div class="contributor-name">Satyam Mishra</div>
+                <div style="font-size: 0.5rem; color: var(--text-secondary);">Fullstack Lead</div>
+            </div>
+            <div class="contributor-card" style="flex: 0 0 100px;" onclick="openMobileModal('modal-atharva')">
+                <div class="contributor-avatar"
+                    style="background: linear-gradient(135deg, #22d3ee, #3b82f6); color: white;">A</div>
+                <div class="contributor-name">Atharva Neeraj</div>
+                <div style="font-size: 0.5rem; color: var(--text-secondary);">Data Scientist</div>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="glass-card stat-card">
+                <div class="stat-value" style="color: var(--neon-emerald);">+4.2%</div>
+                <div class="stat-label">Market Alpha</div>
+            </div>
+            <div class="glass-card stat-card">
+                <div class="stat-value">128</div>
+                <div class="stat-label">Scenarios Run</div>
+            </div>
+        </div>
+
+        <!-- Featured Reels Preview -->
+        <div class="section-header">
+            <h2 class="section-title">LIVE FEED</h2>
+            <a href="pages/news_reels_mobile.html" style="font-size: 0.75rem; color: var(--neon-blue);">Explore All</a>
+        </div>
+
+        <div class="glass-card" style="padding: 0; overflow: hidden; height: 160px; position: relative;"
+            onclick="location.href='pages/news_reels_mobile.html'">
+            <div
+                style="width:100%; height:100%; background: linear-gradient(45deg, #0f172a, #1e293b); display: flex; align-items: center; justify-content: center;">
+                <span style="opacity: 0.5; font-family: 'Space Grotesk';">PULSE SIMULATION</span>
+            </div>
+            <div
+                style="position: absolute; bottom: 0; left: 0; width: 100%; padding: 12px; background: linear-gradient(transparent, rgba(0,0,0,0.8));">
+                <div class="badge badge-risk" style="margin-bottom: 4px;">High Risk</div>
+                <div style="font-weight: 600; font-size: 0.9rem;">Global Oil Supply Chain Disruption</div>
+            </div>
+        </div>
+
+        <!-- Quick Access -->
+        <div class="section-header" style="margin-top: 24px;">
+            <h2 class="section-title">CORE MODULES</h2>
+        </div>
+
+        <a href="pages/vc_forge_mobile.html" class="glass-card quick-action">
+            <div class="action-icon">🛡️</div>
+            <div>
+                <div style="font-weight: 700; font-size: 1rem;">VC Forge</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Test runway against black swans.</div>
+            </div>
+        </a>
+
+        <a href="pages/funding_mobile.html" class="glass-card quick-action">
+            <div class="action-icon">🏛️</div>
+            <div>
+                <div style="font-weight: 700; font-size: 1rem;">Funding</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Govt Funding Matchmaking.</div>
+            </div>
+        </a>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-backdrop">
+        <!-- Adharva -->
+        <div class="modal-content" id="modal-adharva">
+            <div class="modal-drag-handle"></div>
+            <button class="modal-close-btn" onclick="closeMobileModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <div class="contributor-avatar"
+                    style="width: 64px; height: 64px; font-size: 1.5rem; background: var(--neon-blue); color: white;">A
+                </div>
+                <div>
+                    <h2 style="margin: 0; font-family: 'Space Grotesk'; font-size: 1.4rem;">Adharva Shine</h2>
+                    <div style="color: var(--neon-blue); font-size: 0.8rem; font-weight: 700;">AI & API SPECIALIST</div>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px;">
+                Powers MarketMind's intelligence layer — building AI models and API integrations that drive real-time
+                predictions.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="https://www.linkedin.com/in/adharv-shine-81a111287/" target="_blank" class="glass-card"
+                    style="padding: 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: white;">
+                    <i class="fa-brands fa-linkedin" style="color: #0077b5;"></i> LinkedIn Profile
+                </a>
+                <a href="https://www.instagram.com/adharv_shine/" target="_blank" class="glass-card"
+                    style="padding: 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: white;">
+                    <i class="fa-brands fa-instagram" style="color: #e4405f;"></i> Instagram Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- Satyam -->
+        <div class="modal-content" id="modal-satyam">
+            <div class="modal-drag-handle"></div>
+            <button class="modal-close-btn" onclick="closeMobileModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <div class="contributor-avatar"
+                    style="width: 64px; height: 64px; font-size: 1.5rem; background: var(--neon-purple); color: white;">
+                    S</div>
+                <div>
+                    <h2 style="margin: 0; font-family: 'Space Grotesk'; font-size: 1.4rem;">Satyam Mishra</h2>
+                    <div style="color: var(--neon-purple); font-size: 0.8rem; font-weight: 700;">FULLSTACK & DESIGN LEAD
+                    </div>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px;">
+                Builds MarketMind end-to-end — from UI/UX design and frontend interactions to backend architecture and
+                database integration.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="https://www.linkedin.com/in/satyamofficial/" target="_blank" class="glass-card"
+                    style="padding: 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: white;">
+                    <i class="fa-brands fa-linkedin" style="color: #0077b5;"></i> LinkedIn Profile
+                </a>
+                <a href="https://www.instagram.com/developersatyam/" target="_blank" class="glass-card"
+                    style="padding: 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: white;">
+                    <i class="fa-brands fa-instagram" style="color: #e4405f;"></i> Instagram Profile
+                </a>
+            </div>
+        </div>
+
+        <!-- Atharva -->
+        <div class="modal-content" id="modal-atharva">
+            <div class="modal-drag-handle"></div>
+            <button class="modal-close-btn" onclick="closeMobileModal()"><i class="fa-solid fa-xmark"></i></button>
+            <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                <div class="contributor-avatar"
+                    style="width: 64px; height: 64px; font-size: 1.5rem; background: #22d3ee; color: white;">A</div>
+                <div>
+                    <h2 style="margin: 0; font-family: 'Space Grotesk'; font-size: 1.4rem;">Atharva Neeraj</h2>
+                    <div style="color: #22d3ee; font-size: 0.8rem; font-weight: 700;">DATA SCIENTIST</div>
+                </div>
+            </div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem; line-height: 1.6; margin-bottom: 24px;">
+                Builds the data pipelines and models that power MarketMind's predictive accuracy across 500+ global
+                sources.
+            </p>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <a href="https://www.linkedin.com/in/atharva-neeraj-0a901b391/" target="_blank" class="glass-card"
+                    style="padding: 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: white;">
+                    <i class="fa-brands fa-linkedin" style="color: #0077b5;"></i> LinkedIn Profile
+                </a>
+                <a href="https://www.instagram.com/atharvan098/" target="_blank" class="glass-card"
+                    style="padding: 14px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: white;">
+                    <i class="fa-brands fa-instagram" style="color: #e4405f;"></i> Instagram Profile
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav id="bottom-nav">
+        <a href="dashboard_mobile.html" class="nav-item">
+            <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
+            <span>Home</span>
+        </a>
+        <a href="pages/news_reels_mobile.html" class="nav-item">
+            <span class="nav-icon"><i class="fa-solid fa-clapperboard"></i></span>
+            <span>Reels</span>
+        </a>
+        <a href="pages/vc_forge_mobile.html" class="nav-item">
+            <span class="nav-icon"><i class="fa-solid fa-microchip"></i></span>
+            <span>Forge</span>
+        </a>
+        <a href="pages/funding_mobile.html" class="nav-item">
+            <span class="nav-icon"><i class="fa-solid fa-magnifying-glass-dollar"></i></span>
+            <span>Funding</span>
+        </a>
+        <a href="pages/global_policies_mobile.html" class="nav-item">
+            <span class="nav-icon"><i class="fa-solid fa-file-contract"></i></span>
+            <span>Policies</span>
+        </a>
+    </nav>
+
+    <script src="js/mobile_nav.js" defer></script>
+</body>
+
+</html>

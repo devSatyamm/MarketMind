@@ -1,0 +1,10 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+
+# API SECRETS (DO NOT PUSH)
+js/secrets.js
+js/api-keys.js

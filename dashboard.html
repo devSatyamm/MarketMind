@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="js/device_detector.js"></script>
+    <title>MarketMind | Dashboard</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .btn-analyse {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            border: none;
+            padding: 0.6rem 1.4rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        .btn-analyse:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+            filter: brightness(1.1);
+        }
+        .pulse { animation: pulse-animation 2s infinite; }
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.4); }
+            100% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
+        }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 8, 15, 0.8);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 2000; padding: 20px;
+        }
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            width: 100%; max-width: 550px;
+            padding: 1.75rem; box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            color: var(--text-muted); font-size: 1.5rem;
+            background: none; border: none; cursor: pointer;
+        }
+        .modal-tabs {
+            display: flex; gap: 1rem; margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .modal-tab {
+            padding-bottom: 0.75rem; color: var(--text-secondary);
+            cursor: pointer; font-weight: 600; position: relative;
+        }
+        .modal-tab.active { color: var(--accent-cyan); }
+        .modal-tab.active::after {
+            content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px;
+            background: var(--accent-cyan);
+        }
+        .analysis-progress-container {
+            height: 8px; background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px; overflow: hidden; margin: 1rem 0;
+        }
+        .analysis-progress-bar {
+            height: 100%; width: 78%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            border-radius: 4px;
+        }
+        .impact-tags-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; }
+        .action-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1.5rem; }
+        .action-card {
+            background: var(--bg-surface); border: 1px solid var(--border);
+            padding: 0.75rem; border-radius: 10px;
+            display: flex; align-items: center; gap: 0.75rem;
+            font-weight: 600; transition: all 0.2s; cursor: pointer;
+        }
+        .action-card:hover { border-color: var(--accent-blue); background: var(--blue-dim); }
+        /* Role filter tabs */
+        .role-tabs {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.5rem 0;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .role-tab {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.42rem 1rem;
+            border-radius: var(--r-pill);
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.22s;
+            border: 1px solid transparent;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .role-tab:hover {
+            color: var(--text-primary);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .role-tab.active {
+            color: var(--text-primary);
+            background: var(--indigo-dim);
+            border-color: rgba(99,102,241,0.35);
+            box-shadow: 0 0 14px rgba(99,102,241,0.15);
+        }
+
+        .role-tab .tab-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            opacity: 0.6;
+        }
+
+        #mm-feed-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+        }
+
+        /* Slide-in animation for new cards */
+        @keyframes mm-slide-in {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .mm-live-card {
+            animation: mm-slide-in 0.3s ease forwards;
+        }
+        .mm-live-card:nth-child(2) { animation-delay: 0.06s; }
+        .mm-live-card:nth-child(3) { animation-delay: 0.12s; }
+        .mm-live-card:nth-child(4) { animation-delay: 0.18s; }
+        .mm-live-card:nth-child(5) { animation-delay: 0.24s; }
+    </style>
+</head>
+
+<body class="is-dashboard">
+
+    <!-- Header -->
+    <header class="main-header">
+        <a href="index.html" class="logo">
+            <span class="logo-icon-sm"><i class="fa-solid fa-cube"></i></span>
+            MARKET<span class="logo-sub">MIND</span>
+        </a>
+
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search insights, markets, or trends…">
+        </div>
+
+        <nav class="nav-menu">
+            <a href="dashboard.html" class="nav-item active" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="pages/strategy.html" class="nav-item" data-i18n="nav.simulations">Simulations</a>
+            <a href="pages/funding.html" class="nav-item" data-i18n="nav.funding">Funding</a>
+            <a href="pages/vc_forge.html" class="nav-item" data-i18n="nav.vcforge">VC Forge</a>
+            <a href="pages/global_policies.html" class="nav-item" data-i18n="nav.policies">Policies</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+            <button class="btn btn-icon btn-ghost relative">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-gear"></i></button>
+            <a href="pages/profile.html" class="profile-avatar-sm">
+                <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile">
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>Market Overview</h1>
+                <p id="mm-status-bar"><i class="fa-solid fa-circle-dot text-cyan"
+                        style="font-size:0.6rem; margin-right:0.3rem;"></i>Real-time economic intelligence &amp;
+                    AI-driven foresight</p>
+            </div>
+            <div class="flex gap-3 items-center">
+                <button class="btn btn-outline" onclick="MarketMind.refresh()" style="font-size:0.82rem;">
+                    <i class="fa-solid fa-rotate-right"></i> <span data-i18n="db.refresh">Refresh</span>
+                </button>
+                <button class="btn-analyse pulse" onclick="openAnalyseModal()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> <span data-i18n="db.analyse">Analyse</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Role Filter Tabs -->
+        <div class="role-tabs" id="mm-role-tabs">
+            <div class="role-tab active" data-role="All" onclick="switchRoleTab(this)">
+                <span class="tab-dot"></span> <span data-i18n="role.all">All</span>
+            </div>
+            <div class="role-tab" data-role="Founder" onclick="switchRoleTab(this)" data-i18n="role.founder">🚀 Founders</div>
+            <div class="role-tab" data-role="Investor" onclick="switchRoleTab(this)" data-i18n="role.investor">💼 Investors</div>
+            <div class="role-tab" data-role="Student" onclick="switchRoleTab(this)" data-i18n="role.student">🎓 Students</div>
+            <div class="role-tab" data-role="Analyst" onclick="switchRoleTab(this)" data-i18n="role.analyst">📊 Analysts</div>
+            <div class="role-tab" data-role="Researcher" onclick="switchRoleTab(this)" data-i18n="role.researcher">🔬 Researchers</div>
+            <div class="role-tab" data-role="MSME Owner" onclick="switchRoleTab(this)" data-i18n="role.msme">🏭 MSME Owners</div>
+        </div>
+
+        <div class="dashboard-layout">
+
+            <!-- Live AI Feed -->
+            <div>
+                <div id="mm-feed-label" data-i18n="db.feed.all">⚡ All Insights — AI Consequence Feed</div>
+                <div id="mm-feed" style="display:flex;flex-direction:column;gap:1rem;">
+                    <!-- Populated by MarketMind.init() -->
+                </div>
+            </div>
+
+            <!-- Sidebar -->
+            <aside id="mm-sidebar">
+                <div class="sidebar-inner flex flex-col gap-4">
+                    <!-- Watchlist -->
+                    <div class="widget">
+                        <h3><i class="fa-solid fa-star"></i> Watchlist <button class="btn btn-sm btn-ghost ml-auto"
+                                style="font-size:0.72rem; padding:0.2rem 0.6rem;">Edit</button></h3>
+                        <div>
+                            <div class="ticker-item">
+                                <div>
+                                    <div class="ticker-name">NASDAQ</div>
+                                    <div class="ticker-sub">Tech Index</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="ticker-change text-green">+1.24%</div>
+                                    <div class="ticker-price">14,250.50</div>
+                                </div>
+                            </div>
+                            <div class="ticker-item">
+                                <div>
+                                    <div class="ticker-name">XAU/USD</div>
+                                    <div class="ticker-sub">Gold Spot</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="ticker-change text-red">-0.45%</div>
+                                    <div class="ticker-price">1,985.20</div>
+                                </div>
+                            </div>
+                            <div class="ticker-item">
+                                <div>
+                                    <div class="ticker-name">BTC/USD</div>
+                                    <div class="ticker-sub">Bitcoin</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="ticker-change text-green">+3.80%</div>
+                                    <div class="ticker-price">42,100.00</div>
+                                </div>
+                            </div>
+                            <div class="ticker-item">
+                                <div>
+                                    <div class="ticker-name">S&amp;P 500</div>
+                                    <div class="ticker-sub">US Equities</div>
+                                </div>
+                                <div class="text-right">
+                                    <div class="ticker-change text-green">+0.67%</div>
+                                    <div class="ticker-price">5,024.80</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hotlines -->
+                    <div class="widget" id="hotlines-widget">
+                        <h3 style="display:flex;align-items:center;gap:0.5rem;">
+                            <i class="fa-solid fa-location-dot" style="color:#f87171;"></i>
+                            Hotlines
+                            <span style="margin-left:auto;font-size:0.6rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:999px;background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.25);color:#f87171;">LOCAL</span>
+                        </h3>
+                        <p style="font-size:0.72rem;color:#475569;margin-bottom:0.85rem;line-height:1.5;">Enter any city, state or country — get the most critical news happening right there.</p>
+
+                        <!-- Location input -->
+                        <div style="display:flex;gap:0.4rem;margin-bottom:1rem;">
+                            <div style="position:relative;flex:1;">
+                                <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:0.65rem;top:50%;transform:translateY(-50%);font-size:0.7rem;color:#475569;"></i>
+                                <input id="hotlines-input" type="text"
+                                    placeholder="e.g. Jaipur, Maharashtra, USA…"
+                                    style="width:100%;padding:0.55rem 0.75rem 0.55rem 2rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.09);border-radius:10px;color:#e2e8f0;font-size:0.78rem;font-family:inherit;outline:none;"
+                                    onkeydown="if(event.key==='Enter') fetchHotlines()"
+                                    onfocus="this.style.borderColor='rgba(248,113,113,0.4)'"
+                                    onblur="this.style.borderColor='rgba(255,255,255,0.09)'">
+                            </div>
+                            <button onclick="fetchHotlines()" id="hotlines-btn"
+                                style="padding:0.55rem 0.8rem;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.3);border-radius:10px;color:#f87171;cursor:pointer;font-size:0.8rem;transition:all 0.2s;flex-shrink:0;"
+                                onmouseover="this.style.background='rgba(248,113,113,0.22)'"
+                                onmouseout="this.style.background='rgba(248,113,113,0.12)'">
+                                <i class="fa-solid fa-bolt"></i>
+                            </button>
+                        </div>
+
+                        <!-- Results -->
+                        <div id="hotlines-results" style="display:flex;flex-direction:column;gap:0.6rem;"></div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <div id="analyseModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAnalyseModal()">&times;</button>
+            <h2 class="text-xl font-bold mb-4">Market Intelligence Analyser</h2>
+
+            <div id="modalInputView">
+                <div class="modal-tabs">
+                    <div class="modal-tab active" id="tabLink" onclick="switchAnalyseTab('link')">Paste Link</div>
+                    <div class="modal-tab" id="tabText" onclick="switchAnalyseTab('text')">Paste Text</div>
+                </div>
+
+                <div id="linkInput" class="mb-4">
+                    <input type="text" id="newsUrl" placeholder="https://news-source.com/article/market-update..." class="w-full">
+                </div>
+                <div id="textInput" class="mb-4" style="display:none;">
+                    <textarea id="newsContent" placeholder="Describe the news event or paste text here..." rows="5" class="w-full"></textarea>
+                </div>
+
+                <button class="btn btn-primary w-full py-3" onclick="runAnalysis()">
+                    <i class="fa-solid fa-rocket mr-2"></i> Run AI Analysis
+                </button>
+            </div>
+
+            <div id="modalResultView" style="display:none;">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold">Truth Detection</span>
+                    <span class="text-xs font-bold text-green">Credibility Score: 78% True</span>
+                </div>
+                <div class="analysis-progress-container">
+                    <div class="analysis-progress-bar"></div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="text-sm font-bold mb-2 uppercase tracking-wide text-secondary">Summary</h3>
+                    <ul class="text-sm text-muted list-disc ml-4 space-y-2">
+                        <li>Major institutional shift towards sustainable energy infrastructure.</li>
+                        <li>Projected $12B capital injection into regional battery storage.</li>
+                        <li>Neutral impact on short-term consumer pricing, bullish on 2027 forecasts.</li>
+                    </ul>
+                </div>
+
+                <div class="impact-tags-row">
+                    <span class="badge badge-blue">Stock Market</span>
+                    <span class="badge badge-yellow">Global Economy</span>
+                    <span class="badge badge-cyan">Tech Sector</span>
+                </div>
+
+                <div class="action-grid">
+                    <div class="action-card" onclick="window.location.href='pages/strategy.html'">
+                        <i class="fa-solid fa-chart-line text-blue"></i>
+                        <span class="text-xs">Simulations</span>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='pages/funding.html'">
+                        <i class="fa-solid fa-hand-holding-dollar text-green"></i>
+                        <span class="text-xs">Fundings</span>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='pages/global_policies.html'">
+                        <i class="fa-solid fa-gavel text-violet"></i>
+                        <span class="text-xs">Policies</span>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='pages/global_policies.html'">
+                        <i class="fa-solid fa-shield-halved text-cyan"></i>
+                        <span class="text-xs">Rules</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-ghost w-full mt-6 text-xs" onclick="resetAnalyseModal()">Analyze Another News</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ULTIMATE SCROLL FIX OVERRIDE -->
+    <style>
+        body.is-dashboard { height: 100vh !important; overflow: hidden !important; }
+        .dashboard-layout { height: calc(100vh - 220px) !important; overflow: hidden !important; flex: 1; }
+        .dashboard-layout > div:first-child { 
+            height: 100% !important; 
+            overflow-y: scroll !important; 
+            scrollbar-width: auto !important;
+            padding-right: 1.5rem !important;
+        }
+        .sidebar-inner { 
+            height: 100% !important; 
+            max-height: calc(100vh - 240px) !important;
+            overflow-y: scroll !important; 
+            scrollbar-width: auto !important;
+            padding-right: 1.5rem !important;
+        }
+        /* Extra-visible native scrollbars just to be sure */
+        ::-webkit-scrollbar { width: 12px !important; }
+        ::-webkit-scrollbar-thumb { background: #6366f1 !important; border-radius: 10px !important; border: 3px solid #0a1120 !important; }
+    </style>
+
+    <script src="js/config.js"></script>
+    <script src="js/sakha.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="script.js"></script>
+    <script src="js/marketmind.js"></script>
+    <script>
+        // ── Analyse Modal — fully wired to Groq AI ────────────────────────────
+        function openAnalyseModal() {
+            const modal = document.getElementById('analyseModal');
+            if (!modal) return;
+            // Reset to input view each time
+            resetAnalyseModal();
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAnalyseModal() {
+            const modal = document.getElementById('analyseModal');
+            if (modal) modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function handleOverlayClick(e) {
+            if (e.target.id === 'analyseModal') closeAnalyseModal();
+        }
+
+        function switchAnalyseTab(tab) {
+            const isLink = tab === 'link';
+            document.getElementById('tabLink').classList.toggle('active', isLink);
+            document.getElementById('tabText').classList.toggle('active', !isLink);
+            document.getElementById('linkInput').style.display  = isLink ? 'block' : 'none';
+            document.getElementById('textInput').style.display  = isLink ? 'none'  : 'block';
+        }
+
+        // Stores last analysed input so Sakha can be opened with full context
+        let _lastAnalysisInput = '';
+
+        async function runAnalysis() {
+            const btn = event.currentTarget;
+            const url  = document.getElementById('newsUrl')?.value?.trim();
+            const text = document.getElementById('newsContent')?.value?.trim();
+            const input = url || text;
+            _lastAnalysisInput = input || '';
+
+            if (!input) { alert('Please paste a URL or describe the news.'); return; }
+
+            // Loading state
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analysing with Groq…';
+            btn.disabled  = true;
+
+            try {
+                const lang = (typeof I18n !== 'undefined') ? I18n.geminiLang() : 'English';
+                const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${window.GROQ_API_KEY}`,
+                        'Content-Type':  'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `You are an expert financial news analyst and fact-checker.
+Analyse the given news article or event and return ONLY a valid JSON object:
+{
+  "credibility_score": <integer 0-100>,
+  "credibility_label": "<Highly Credible|Credible|Questionable|Likely Misleading>",
+  "credibility_color": "<green|cyan|yellow|red>",
+  "summary_points": ["point 1", "point 2", "point 3"],
+  "impact_tags": [
+    {"label": "<tag>", "color": "badge-blue|badge-yellow|badge-cyan|badge-green|badge-red"}
+  ],
+  "verdict": "<one sentence verdict on the news>",
+  "affected_roles": [
+    {"role": "Founders",    "impact": "High|Medium|Low|None", "reason": "1-line why this role is affected"},
+    {"role": "Students",   "impact": "High|Medium|Low|None", "reason": "1-line why"},
+    {"role": "Investors",  "impact": "High|Medium|Low|None", "reason": "1-line why"},
+    {"role": "Analysts",   "impact": "High|Medium|Low|None", "reason": "1-line why"},
+    {"role": "Researchers","impact": "High|Medium|Low|None", "reason": "1-line why"},
+    {"role": "MSME Owners","impact": "High|Medium|Low|None", "reason": "1-line why"}
+  ]
+}
+impact_tags: 3-5 tags like Stock Market, Crypto, INR, GDP, Policy, Trade, etc.
+All text must be in ${lang}.`
+                            },
+                            { role: 'user', content: `Analyse this news: ${input}` }
+                        ],
+                        temperature: 0.5,
+                        max_tokens: 800
+                    })
+                });
+
+                const data = await res.json();
+                const raw  = data.choices?.[0]?.message?.content || '{}';
+                // Strip markdown fences if any
+                const clean = raw.replace(/^```(?:json)?\n?/i,'').replace(/\n?```$/i,'').trim();
+                const result = JSON.parse(clean);
+                _renderAnalysisResult(result);
+
+            } catch(err) {
+                // Fallback: show error inside result view
+                _renderAnalysisResult({
+                    credibility_score: 0,
+                    credibility_label: 'Error',
+                    credibility_color: 'red',
+                    summary_points: [`Could not contact Groq API: ${err.message}`, 'Check your API key in js/config.js', 'Try again or paste text instead of URL'],
+                    impact_tags: [{label: 'API Error', color: 'badge-red'}],
+                    verdict: 'Analysis unavailable.'
+                });
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-rocket mr-2"></i> Run AI Analysis';
+            btn.disabled  = false;
+        }
+
+        function _renderAnalysisResult(r) {
+            const score    = r.credibility_score ?? 0;
+            const color    = r.credibility_color || 'green';
+            const colorHex = { green:'#34d399', cyan:'#22d3ee', yellow:'#fbbf24', red:'#f87171' }[color] || '#34d399';
+
+            // Truth score bar + label
+            document.querySelector('#analyseModal .flex.justify-between.items-center.mb-2 span:first-child').textContent = 'Truth Detection';
+            document.querySelector('#analyseModal .flex.justify-between.items-center.mb-2 span:last-child').textContent  = `Credibility: ${score}% — ${r.credibility_label || ''}`;
+            document.querySelector('#analyseModal .flex.justify-between.items-center.mb-2 span:last-child').style.color  = colorHex;
+
+            // Animated progress bar
+            const bar = document.querySelector('#analyseModal .analysis-progress-bar');
+            if (bar) {
+                bar.style.width = '0%';
+                bar.style.background = `linear-gradient(90deg, ${colorHex}, ${colorHex}99)`;
+                setTimeout(() => { bar.style.transition = 'width 0.8s ease'; bar.style.width = `${score}%`; }, 50);
+            }
+
+            // Summary bullets
+            const ul = document.querySelector('#analyseModal ul');
+            if (ul && r.summary_points?.length) {
+                ul.innerHTML = r.summary_points.map(p => `<li>${p}</li>`).join('');
+            }
+
+            // Verdict line
+            let verdictEl = document.getElementById('analyse-verdict');
+            if (!verdictEl) {
+                verdictEl = document.createElement('p');
+                verdictEl.id = 'analyse-verdict';
+                verdictEl.style.cssText = 'font-size:0.78rem;color:#94a3b8;margin-top:0.5rem;font-style:italic;padding:0.5rem 0.75rem;background:rgba(255,255,255,0.03);border-radius:8px;border-left:3px solid ' + colorHex;
+                ul?.parentNode?.appendChild(verdictEl);
+            }
+            verdictEl.style.borderLeftColor = colorHex;
+            verdictEl.textContent = r.verdict || '';
+
+            // Impact tags
+            const tagsRow = document.querySelector('#analyseModal .impact-tags-row');
+            if (tagsRow && r.impact_tags?.length) {
+                tagsRow.innerHTML = r.impact_tags.map(t =>
+                    `<span class="badge ${t.color || 'badge-blue'}">${t.label}</span>`
+                ).join('');
+            }
+
+            // ── Who is affected? role filter chips ───────────────────────────
+            const ROLE_META = {
+                'Founders':    { icon:'fa-rocket',              base:'rgba(99,102,241,0.12)',  border:'rgba(99,102,241,0.35)',  text:'#a5b4fc' },
+                'Students':    { icon:'fa-graduation-cap',      base:'rgba(34,211,238,0.1)',   border:'rgba(34,211,238,0.3)',   text:'#67e8f9' },
+                'Investors':   { icon:'fa-hand-holding-dollar', base:'rgba(16,185,129,0.1)',   border:'rgba(16,185,129,0.3)',   text:'#34d399' },
+                'Analysts':    { icon:'fa-chart-bar',           base:'rgba(251,191,36,0.1)',   border:'rgba(251,191,36,0.3)',   text:'#fcd34d' },
+                'Researchers': { icon:'fa-flask',               base:'rgba(167,139,250,0.1)',  border:'rgba(167,139,250,0.3)',  text:'#c4b5fd' },
+                'MSME Owners': { icon:'fa-industry',            base:'rgba(249,115,22,0.1)',   border:'rgba(249,115,22,0.3)',   text:'#fb923c' }
+            };
+            const IMPACT_DIM = { None:'0.3', Low:'0.55', Medium:'0.8', High:'1' };
+
+            let rolesEl = document.getElementById('analyse-roles-section');
+            if (!rolesEl) {
+                rolesEl = document.createElement('div');
+                rolesEl.id = 'analyse-roles-section';
+                // Insert before the action-grid
+                const actionGrid = document.querySelector('#analyseModal .action-grid');
+                if (actionGrid) actionGrid.before(rolesEl);
+            }
+
+            if (r.affected_roles?.length) {
+                rolesEl.innerHTML = `
+                <div style="margin:1rem 0 0.5rem;">
+                    <div style="font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#475569;margin-bottom:0.6rem;">Who is affected?</div>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0.45rem;">
+                    ${r.affected_roles.map(role => {
+                        const m = ROLE_META[role.role] || { icon:'fa-user', base:'rgba(255,255,255,0.05)', border:'rgba(255,255,255,0.1)', text:'#94a3b8' };
+                        const opacity = IMPACT_DIM[role.impact] || '0.6';
+                        return `<div title="${role.reason || ''}" style="opacity:${opacity};background:${m.base};border:1px solid ${m.border};border-radius:10px;padding:0.45rem 0.55rem;cursor:default;transition:opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity='${opacity}'">
+                            <div style="display:flex;align-items:center;gap:0.35rem;">
+                                <i class="fa-solid ${m.icon}" style="font-size:0.75rem;color:${m.text};"></i>
+                                <span style="font-size:0.68rem;font-weight:700;color:${m.text};">${role.role}</span>
+                            </div>
+                            <div style="font-size:0.6rem;color:#475569;margin-top:0.2rem;font-weight:700;">${role.impact}</div>
+                        </div>`;
+                    }).join('')}
+                    </div>
+                </div>`;
+            } else {
+                rolesEl.innerHTML = '';
+            }
+
+            // ── Ask Sakha button ─────────────────────────────────────────────
+            let sakhaBtn = document.getElementById('analyse-sakha-btn');
+            if (!sakhaBtn) {
+                sakhaBtn = document.createElement('button');
+                sakhaBtn.id = 'analyse-sakha-btn';
+                sakhaBtn.className = 'btn w-full mt-3';
+                sakhaBtn.style.cssText = 'background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.35);color:#a5b4fc;font-weight:700;display:flex;align-items:center;justify-content:center;gap:0.5rem;padding:0.65rem;border-radius:10px;cursor:pointer;transition:all 0.2s;';
+                sakhaBtn.onmouseover = () => { sakhaBtn.style.background = 'rgba(99,102,241,0.22)'; sakhaBtn.style.boxShadow = '0 0 16px rgba(99,102,241,0.25)'; };
+                sakhaBtn.onmouseout  = () => { sakhaBtn.style.background = 'rgba(99,102,241,0.12)'; sakhaBtn.style.boxShadow = 'none'; };
+                // Insert before the reset button at the bottom
+                const resetBtn = document.querySelector('#analyseModal [onclick="resetAnalyseModal()"]');
+                if (resetBtn) resetBtn.before(sakhaBtn);
+            }
+            sakhaBtn.innerHTML = '<i class="fa-solid fa-atom"></i> Ask Sakha — Dive Deeper';
+            
+            // Voice button for analysis
+            let voiceBtn = document.getElementById('analyse-voice-btn');
+            if (!voiceBtn) {
+                voiceBtn = document.createElement('button');
+                voiceBtn.id = 'analyse-voice-btn';
+                voiceBtn.className = 'voice-btn';
+                voiceBtn.style.cssText = 'width:40px; height:40px; border-radius:10px; margin-top:0.75rem;';
+                voiceBtn.setAttribute('data-listen-text', 'true');
+                voiceBtn.style.display = 'flex';
+                voiceBtn.style.width = '100%';
+                voiceBtn.style.padding = '0.65rem';
+                voiceBtn.style.justifyContent = 'center';
+                voiceBtn.style.gap = '0.5rem';
+                voiceBtn.style.background = 'rgba(255,255,255,0.05)';
+                voiceBtn.style.fontWeight = '700';
+                
+                sakhaBtn.after(voiceBtn);
+            }
+            voiceBtn.innerHTML = '<i class="fa-solid fa-volume-high mr-1"></i> Listen to Summary';
+            voiceBtn.onclick = () => {
+                const text = (r.verdict || '') + '. ' + (r.summary_points ? r.summary_points.join('. ') : '');
+                MMAudio.speak(text, I18n.lang, 'analyse-voice-btn');
+            };
+            sakhaBtn.onclick = () => {
+                closeAnalyseModal();
+                // Build a minimal article context for Sakha from analysis results
+                Sakha.open({
+                    headline:         _lastAnalysisInput.slice(0, 160),
+                    source:           'User Analysed Article',
+                    signal_type:      'Analysis',
+                    role_impact:      r.verdict || '',
+                    action:           r.summary_points?.[0] || '',
+                    consequence_chain: r.summary_points || [],
+                    description:      r.verdict || '',
+                    link:             _lastAnalysisInput.startsWith('http') ? _lastAnalysisInput : '#',
+                    severity:         r.credibility_score >= 70 ? 'High' : 'Medium'
+                });
+            };
+
+            // Switch to result view
+            document.getElementById('modalInputView').style.display  = 'none';
+            document.getElementById('modalResultView').style.display = 'block';
+        }
+
+        function resetAnalyseModal() {
+            document.getElementById('modalInputView').style.display  = 'block';
+            document.getElementById('modalResultView').style.display = 'none';
+            if (document.getElementById('newsUrl'))     document.getElementById('newsUrl').value     = '';
+            if (document.getElementById('newsContent')) document.getElementById('newsContent').value = '';
+            // Reset tab to link
+            switchAnalyseTab('link');
+        }
+
+
+        // ── Hotlines — Location-based news intel ──────────────────────────────
+        async function fetchHotlines() {
+            const input  = document.getElementById('hotlines-input');
+            const btn    = document.getElementById('hotlines-btn');
+            const results= document.getElementById('hotlines-results');
+            const loc    = input?.value?.trim();
+
+            if (!loc) { input?.focus(); return; }
+
+            // Loading skeleton
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+            btn.disabled  = true;
+            results.innerHTML = [1,2,3].map(() => `
+            <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;padding:0.75rem;animation:mm-spin 0s;">
+                <div style="height:9px;border-radius:4px;background:rgba(255,255,255,0.07);margin-bottom:0.4rem;width:85%;"></div>
+                <div style="height:7px;border-radius:4px;background:rgba(255,255,255,0.04);width:60%;"></div>
+            </div>`).join('');
+
+            try {
+                const lang = (typeof I18n !== 'undefined') ? I18n.geminiLang() : 'English';
+                const res  = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${window.GROQ_API_KEY}`,
+                        'Content-Type' : 'application/json'
+                    },
+                    body: JSON.stringify({
+                        model: 'llama-3.3-70b-versatile',
+                        messages: [
+                            {
+                                role: 'system',
+                                content: `You are a hyperlocal economic and financial news intelligence engine.
+Given a location (city, state or country), generate the 4 MOST CRITICAL and impactful economic/business/market news items happening there RIGHT NOW or very recently.
+
+Return ONLY valid JSON:
+{
+  "location": "<cleaned location name>",
+  "news": [
+    {
+      "headline": "<concise, punchy headline max 90 chars>",
+      "source":   "<realistic local/national source name>",
+      "signal_type": "Policy | Market | Macro | Risk | Opportunity | Scheme",
+      "summary":  "<2 sentences: what happened and why it matters locally>",
+      "severity": "High | Medium | Low",
+      "opportunity": true,
+      "timestamp": "<recent date and time, e.g. Mar 27, 2026, 01:05 AM>"
+    }
+  ]
+}
+
+Rules:
+- All 4 items must be SPECIFIC to that location — not generic global news
+- Prioritise: government policy changes, business shutdowns/openings, infrastructure, local economy, major employer news, investment flows
+- severity High = imminent impact on local economy
+- Respond in ${lang}`
+                            },
+                            { role: 'user', content: `Location: ${loc}` }
+                        ],
+                        temperature: 0.65,
+                        max_tokens: 1400
+                    })
+                });
+
+                const data  = await res.json();
+                const raw   = data.choices?.[0]?.message?.content || '{}';
+                const clean = raw.replace(/^```(?:json)?\n?/i,'').replace(/\n?```$/i,'').trim();
+                const parsed = JSON.parse(clean);
+
+                results.innerHTML = '';
+                if (!parsed.news?.length) throw new Error('No news returned');
+
+                // Location label
+                const locLabel = document.createElement('div');
+                locLabel.style.cssText = 'font-size:0.65rem;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#f87171;margin-bottom:0.25rem;display:flex;align-items:center;gap:0.35rem;';
+                locLabel.innerHTML = `<i class="fa-solid fa-location-dot"></i> ${parsed.location || loc}`;
+                results.appendChild(locLabel);
+
+                parsed.news.forEach((item, i) => {
+                    const regKey = `hl_${Date.now()}_${i}`;
+                    // Store in MM_ARTICLES for Sakha
+                    window.MM_ARTICLES = window.MM_ARTICLES || {};
+                    window.MM_ARTICLES[regKey] = {
+                        headline:          item.headline,
+                        source:            item.source,
+                        signal_type:       item.signal_type,
+                        role_impact:       item.summary,
+                        action:            '',
+                        consequence_chain: [],
+                        description:       item.summary,
+                        link:              '#',
+                        severity:          item.severity
+                    };
+                    results.appendChild(_buildHotlineCard(item, regKey));
+                });
+
+            } catch (err) {
+                results.innerHTML = `
+                <div style="padding:0.85rem;border-radius:12px;background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.2);font-size:0.75rem;color:#f87171;">
+                    <i class="fa-solid fa-triangle-exclamation" style="margin-right:0.3rem;"></i>
+                    Could not load hotlines. Try a different location.
+                </div>`;
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-bolt"></i>';
+            btn.disabled  = false;
+        }
+
+        function _buildHotlineCard(item, regKey) {
+            const SEV_COLOR = { High:'#f87171', Medium:'#fbbf24', Low:'#94a3b8' };
+            const SIG_ICON  = { Policy:'fa-building-columns', Market:'fa-chart-line', Macro:'fa-earth-asia', Risk:'fa-triangle-exclamation', Opportunity:'fa-rocket', Scheme:'fa-hand-holding-dollar' };
+            const sevColor  = SEV_COLOR[item.severity]  || '#94a3b8';
+            const sigIcon   = SIG_ICON[item.signal_type] || 'fa-bolt';
+
+            const card = document.createElement('div');
+            card.style.cssText = 'background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:0.75rem;border-left:3px solid ' + sevColor + ';';
+
+            card.innerHTML = `
+            <!-- Signal + timestamp -->
+            <div style="display:flex;align-items:center;gap:0.35rem;margin-bottom:0.4rem;flex-wrap:wrap;">
+                <i class="fa-solid ${sigIcon}" style="font-size:0.6rem;color:${sevColor};"></i>
+                <span style="font-size:0.6rem;font-weight:800;color:${sevColor};text-transform:uppercase;letter-spacing:0.06em;">${item.signal_type}</span>
+                ${item.opportunity ? '<span style="font-size:0.58rem;font-weight:800;color:#34d399;background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);padding:0.05rem 0.4rem;border-radius:999px;">💡 OPP</span>' : ''}
+                <span style="margin-left:auto;font-size:0.6rem;font-weight:700;color:${sevColor};">${item.severity}</span>
+            </div>
+
+            <!-- Headline + Sakha -->
+            <div style="display:flex;align-items:flex-start;gap:0.35rem;margin-bottom:0.4rem;">
+                <div style="font-size:0.8rem;font-weight:800;color:#e2e8f0;line-height:1.35;flex:1;min-width:0;">${item.headline}</div>
+                <div style="display:flex;gap:0.3rem;">
+                    <button class="sakha-btn" style="flex-shrink:0;" onclick="Sakha && Sakha.open(window.MM_ARTICLES['${regKey}'])" title="Ask about this news">
+                        <i class="fa-solid fa-atom"></i> Sakha
+                    </button>
+                    <button class="voice-btn" id="vc-${regKey}" onclick="MMAudio.speak('${item.headline.replace(/'/g,"\\'")}. ${item.summary.replace(/'/g,"\\'")}', '${I18n.lang}', 'vc-${regKey}')" title="Listen">
+                        <i class="fa-solid fa-volume-high"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <p style="font-size:0.71rem;color:#475569;line-height:1.5;margin-bottom:0.4rem;">${item.summary}</p>
+
+            <!-- Source & Timestamp -->
+            <div style="font-size:0.62rem;color:#334155;display:flex;align-items:center;justify-content:space-between;gap:0.25rem;">
+                <div style="display:flex;align-items:center;gap:0.25rem;">
+                    <i class="fa-solid fa-signal" style="font-size:0.5rem;"></i>${item.source}
+                </div>
+                <div style="display:flex;align-items:center;gap:0.25rem;color:rgba(255,255,255,0.25);">
+                    <i class="fa-regular fa-clock" style="font-size:0.55rem;"></i>${item.timestamp || 'Just now'}
+                </div>
+            </div>`;
+
+            return card;
+        }
+
+        // ── Role Tab Switcher ─────────────────────────────────────────────────
+        const ROLE_LABELS = {
+            'All':        '⚡ All Insights — Intelligence Feed',
+            'Founder':    '🚀 Founders — Startup &amp; Market Signals',
+            'Investor':   '💼 Investors — Capital &amp; Risk Intelligence',
+            'Student':    '🎓 Students — Learning &amp; Research Signals',
+            'Analyst':    '📊 Analysts — Data &amp; Trend Breakdown',
+            'Researcher': '🔬 Researchers — Policy &amp; Economic Depth',
+            'MSME Owner': '🏭 MSME Owners — Business &amp; Scheme Alerts'
+        };
+
+
+        function switchRoleTab(el) {
+            // Update active state
+            document.querySelectorAll('.role-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+
+            const role = el.dataset.role;
+
+            // Update feed label
+            const label = document.getElementById('mm-feed-label');
+            if (label) label.innerHTML = ROLE_LABELS[role] || role;
+
+            // Trigger Gemini re-analysis with new role
+            // 'All' sends a broad persona prompt covering all user types
+            MarketMind.setRole(role === 'All' ? 'General reader (covering all personas: Founder, Investor, Student, Analyst, Researcher, MSME Owner)' : role);
+        }
+
+        // Boot MarketMind on load — default to "All"
+        document.addEventListener('DOMContentLoaded', () => {
+            MarketMind.init('mm-feed', 'General reader (covering all personas: Founder, Investor, Student, Analyst, Researcher, MSME Owner)');
+        });
+
+        // Re-run MarketMind when language changes so AI responds in new language
+        document.addEventListener('mm:langchange', () => {
+            MarketMind.setRole(
+                document.querySelector('.role-tab.active')?.dataset.role === 'All'
+                    ? 'General reader (covering all personas)'
+                    : (document.querySelector('.role-tab.active')?.dataset.role || 'Founder')
+            );
+        });
+    </script>
+</body>
+
+</html>

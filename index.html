@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketMind | AI That Thinks Ahead</title>
+    <meta name="description"
+        content="MarketMind — The world's first agentic economic foresight engine. Predict market shifts before they happen with 94% accuracy.">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="landing.css">
+
+    <!-- GSAP & Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="js/device_detector.js"></script>
+</head>
+
+<body>
+
+    <!-- Canvas for 3D Background -->
+    <div id="canvas-container"></div>
+
+    <!-- Navigation -->
+    <nav class="glass-nav" id="main-nav">
+        <a href="index.html" class="logo">
+            <span class="logo-icon"><i class="fa-solid fa-cube"></i></span>
+            <span class="logo-text-main">MARKET</span><span class="logo-text-sub">MIND</span>
+        </a>
+        <div class="nav-links">
+            <a href="#features" data-i18n="nav.features">Features</a>
+            <a href="#stats" data-i18n="nav.impact">Impact</a>
+            <a href="dashboard.html" class="btn-nav" data-i18n="nav.launch">Launch App &nbsp;<i class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </nav>
+
+    <!-- ① Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <span class="pulse-dot"></span>
+                <span data-i18n="land.beta">Now in Beta — Limited Access</span>
+            </div>
+
+            <h1 class="hero-title">AI That <span class="gradient-text" data-i18n="land.hero.gradient">Thinks Ahead</span></h1>
+            <p class="hero-subtext" data-i18n="land.hero.sub">Predict market shifts before they happen. The world's first agentic economic
+                foresight engine, powered by causal intelligence.</p>
+
+            <div class="cta-group">
+                <a href="dashboard.html" class="btn-glow"><span data-i18n="land.cta.access">Get Early Access</span> &nbsp;<i
+                        class="fa-solid fa-arrow-right"></i></a>
+                <a href="#features" class="btn-outline" data-i18n="land.cta.explore">Explore Features</a>
+            </div>
+
+            <div class="stats-mini">
+                <div class="stat-pill">
+                    <span class="dot-green"></span> <span data-i18n="land.accuracy">94% Accuracy</span>
+                </div>
+                <div class="stat-pill">
+                    <span class="dot-blue"></span> <span data-i18n="land.realtime">Real-time Processing</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3D Object Container (Right Side) -->
+        <div class="hero-visual"></div>
+    </section>
+
+    <!-- ② Features Section -->
+    <section id="features" class="features-section">
+        <div class="section-header">
+            <h2><span data-i18n="feat.title">Architected for Speed</span></h2>
+            <p data-i18n="feat.sub">Processing global economic data at the edge of possibility.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="glass-card feature-card">
+                <div class="icon-box"><i class="fa-solid fa-bolt"></i></div>
+                <h3 data-i18n="feat.latency.h">Latency Zero</h3>
+                <p data-i18n="feat.latency.p">Real-time execution with sub-millisecond response times across global markets.</p>
+            </div>
+            <div class="glass-card feature-card">
+                <div class="icon-box"><i class="fa-solid fa-shield-halved"></i></div>
+                <h3 data-i18n="feat.risk.h">Risk Simulation</h3>
+                <p>Run 10,000+ scenarios per second to stress-test your portfolio against black swan events.</p>
+            </div>
+            <div class="glass-card feature-card">
+                <div class="icon-box"><i class="fa-solid fa-network-wired"></i></div>
+                <h3 data-i18n="feat.causal.h">Causal Graphs</h3>
+                <p>Visualize hidden relationships between policy shifts and market movements instantly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ③ Stats Section -->
+    <section id="stats" class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <h3 class="counter" data-target="500">0</h3>
+                <p data-i18n="stat.sources">Data Sources</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="counter" data-target="12">0</h3>
+                <p data-i18n="stat.markets">Markets Tracked</p>
+            </div>
+            <div class="stat-item">
+                <h3 class="counter" data-target="98">0</h3>
+                <p data-i18n="stat.prediction">% Prediction Rate</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ④ Final CTA -->
+    <section class="final-cta">
+        <div class="cta-content glass-card">
+            <h2 data-i18n="cta.title">Ready to see the future?</h2>
+            <p data-i18n="cta.sub">Join top investors and founders using MarketMind today.</p>
+            <a href="dashboard.html" class="btn-glow btn-lg"><span data-i18n="cta.btn">Get Started</span> &nbsp;<i
+                    class="fa-solid fa-arrow-right"></i></a>
+        </div>
+    </section>
+
+    <!-- ⑤ Upcoming Features -->
+    <section id="upcoming" class="features-section" style="padding-top: 2rem;">
+        <div class="section-header">
+            <h2>What's <span class="gradient-text">Coming Next</span></h2>
+            <p>Powerful features on the horizon — shaping the future of MarketMind.</p>
+        </div>
+
+        <div class="features-grid">
+            <!-- Upcoming 1 -->
+            <div class="glass-card feature-card">
+                <div class="icon-box" style="background: linear-gradient(135deg, #f97316, #ef4444);">
+                    <i class="fa-solid fa-explosion"></i>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                    <h3>Impact Simulation</h3>
+                    <span
+                        style="font-size:0.65rem; padding:2px 8px; background:rgba(251,191,36,0.15); color:#fbbf24; border-radius:999px; font-weight:600;">COMING
+                        SOON</span>
+                </div>
+                <p>Simulate how breaking news events ripple through markets — visualize economic impact before it
+                    unfolds in real time.</p>
+            </div>
+
+            <!-- Upcoming 2 -->
+            <div class="glass-card feature-card">
+                <div class="icon-box" style="background: linear-gradient(135deg, #06b6d4, #3b82f6);">
+                    <i class="fa-solid fa-location-crosshairs"></i>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                    <h3>Location-Based News</h3>
+                    <span
+                        style="font-size:0.65rem; padding:2px 8px; background:rgba(251,191,36,0.15); color:#fbbf24; border-radius:999px; font-weight:600;">COMING
+                        SOON</span>
+                </div>
+                <p>Personalized economic intelligence tailored to your region — local policies, grants, and market
+                    shifts that matter to you.</p>
+            </div>
+
+            <!-- Upcoming 3 -->
+            <div class="glass-card feature-card">
+                <div class="icon-box" style="background: linear-gradient(135deg, #a855f7, #ec4899);">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.25rem;">
+                    <h3>AI Co-Pilot for Pitches</h3>
+                    <span
+                        style="font-size:0.65rem; padding:2px 8px; background:rgba(251,191,36,0.15); color:#fbbf24; border-radius:999px; font-weight:600;">COMING
+                        SOON</span>
+                </div>
+                <p>An AI assistant that helps you craft investor-ready pitches — real-time feedback, scoring, and scheme
+                    matching built in.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⑥ Footer -->
+    <footer>
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="logo-sm">
+                    <i class="fa-solid fa-cube"></i>&nbsp;MARKETMIND
+                </div>
+                <p class="footer-tagline">Foresight-grade intelligence for capital markets. Built at the edge of
+                    possibility.</p>
+            </div>
+        </div>
+
+        <!-- Contributors Section -->
+        <div class="contributors-section">
+            <div class="contributors-label">Contributors</div>
+
+            <div class="contributors-grid">
+                <!-- Card 1 -->
+                <div class="contributor-card" onclick="openModal('adharva')">
+                    <div class="contributor-avatar">A</div>
+                    <div class="contributor-name">Adharva Shine</div>
+                    <div class="contributor-role">AI & API</div>
+                    <div class="contributor-tap-hint">View Profile →</div>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="contributor-card" onclick="openModal('satyam')">
+                    <div class="contributor-avatar" style="background: linear-gradient(135deg,#8b5cf6,#22d3ee);">S</div>
+                    <div class="contributor-name">Satyam Mishra</div>
+                    <div class="contributor-role">Frontend, Backend & Design</div>
+                    <div class="contributor-tap-hint">View Profile →</div>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="contributor-card" onclick="openModal('atharva')">
+                    <div class="contributor-avatar" style="background: linear-gradient(135deg,#22d3ee,#3b82f6);">A</div>
+                    <div class="contributor-name">Atharva Neeraj</div>
+                    <div class="contributor-role">Data / Research</div>
+                    <div class="contributor-tap-hint">View Profile →</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom bar -->
+        <div class="footer-bottom">
+            <p class="copyright" data-i18n="footer.rights">© 2026 MarketMind Inc. All rights reserved.</p>
+            <p class="made-with-love">Made with <span class="heart">♥</span> by Team Grey Matter</p>
+        </div>
+    </footer>
+
+    <!-- ─── Contributor Modals ─── -->
+
+    <!-- Modal: Adharv -->
+    <div class="modal-overlay" id="modal-adharva">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('adharva')" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-avatar">A</div>
+            <div class="modal-name">Adharva Shine</div>
+            <div class="modal-role">AI & API Specialist</div>
+            <p class="modal-bio">Powers MarketMind's intelligence layer — building AI models and API integrations
+                that drive real-time predictions.</p>
+            <div class="modal-socials">
+                <a href="https://www.instagram.com/adharv_shine/" target="_blank" rel="noopener"
+                    class="social-btn instagram">
+                    <i class="fa-brands fa-instagram"></i> Instagram
+                </a>
+                <a href="https://www.linkedin.com/in/adharv-shine-81a111287/" target="_blank" rel="noopener"
+                    class="social-btn linkedin">
+                    <i class="fa-brands fa-linkedin"></i> LinkedIn
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Satyam -->
+    <div class="modal-overlay" id="modal-satyam">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('satyam')" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-avatar" style="background: linear-gradient(135deg,#8b5cf6,#22d3ee);">S</div>
+            <div class="modal-name">Satyam Mishra</div>
+            <div class="modal-role">Frontend, Backend & Design Lead</div>
+            <p class="modal-bio">Builds MarketMind end-to-end — from UI/UX design and frontend interactions to
+                backend architecture and database integration.</p>
+            <div class="modal-socials">
+                <a href="https://www.instagram.com/developersatyam/" target="_blank" rel="noopener"
+                    class="social-btn instagram">
+                    <i class="fa-brands fa-instagram"></i> Instagram
+                </a>
+                <a href="https://www.linkedin.com/in/satyamofficial/" target="_blank" rel="noopener"
+                    class="social-btn linkedin">
+                    <i class="fa-brands fa-linkedin"></i> LinkedIn
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Atharva -->
+    <div class="modal-overlay" id="modal-atharva">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeModal('atharva')" aria-label="Close">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="modal-avatar" style="background: linear-gradient(135deg,#22d3ee,#3b82f6);">A</div>
+            <div class="modal-name">Atharva Neeraj</div>
+            <div class="modal-role">Data Scientist &amp; Researcher</div>
+            <p class="modal-bio">Builds the data pipelines and models that power MarketMind's predictive accuracy across
+                500+ global sources.</p>
+            <div class="modal-socials">
+                <a href="https://www.instagram.com/atharvan098/" target="_blank" rel="noopener"
+                    class="social-btn instagram">
+                    <i class="fa-brands fa-instagram"></i> Instagram
+                </a>
+                <a href="https://www.linkedin.com/in/atharva-neeraj-0a901b391/" target="_blank" rel="noopener"
+                    class="social-btn linkedin">
+                    <i class="fa-brands fa-linkedin"></i> LinkedIn
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/i18n.js"></script>
+    <script src="js/landing.js"></script>
+</body>
+
+</html>
