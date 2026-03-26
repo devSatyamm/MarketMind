@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | Profile</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* Stat cards row on profile hero */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            margin-top: 1.25rem;
+        }
+
+        .hero-stat-item {
+            text-align: center;
+        }
+
+        .hero-stat-val {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-stat-lbl {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-top: 0.1rem;
+        }
+
+        /* Divider between sections */
+        .section-divider {
+            height: 1px;
+            background: var(--border);
+            margin: 1.5rem 0;
+        }
+
+        /* Danger zone */
+        .danger-zone {
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            background: rgba(239, 68, 68, 0.04);
+            border-radius: var(--r-lg);
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <a href="../index.html" class="logo">
+            <span class="logo-icon-sm"><i class="fa-solid fa-cube"></i></span>
+            MARKET<span class="logo-sub">MIND</span>
+        </a>
+
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search…">
+        </div>
+
+        <nav class="nav-menu">
+            <a href="../dashboard.html" class="nav-item">Dashboard</a>
+            <a href="strategy.html" class="nav-item">Simulations</a>
+            <a href="funding.html" class="nav-item">Funding</a>
+            <a href="vc_forge.html" class="nav-item">VC Forge</a>
+            <a href="global_policies.html" class="nav-item">Policies</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-gear"></i></button>
+            <a href="profile.html" class="profile-avatar-sm" style="border-color:var(--accent-indigo);">
+                <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile">
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="profile-container">
+
+            <!-- Hero -->
+            <div class="profile-hero">
+                <div class="avatar-upload">
+                    <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=256"
+                        alt="Avatar">
+                    <div class="avatar-overlay"><i class="fa-solid fa-camera"></i></div>
+                </div>
+                <div class="profile-name">Grey Matter</div>
+                <div class="profile-plan"><i class="fa-solid fa-circle-check" style="margin-right:0.3rem;"></i>Verified Identity</div>
+
+                <div class="hero-stats">
+                    <div class="hero-stat-item">
+                        <div class="hero-stat-val">142</div>
+                        <div class="hero-stat-lbl">Insights Saved</div>
+                    </div>
+                    <div class="hero-stat-item">
+                        <div class="hero-stat-val" style="color:var(--accent-cyan);">28</div>
+                        <div class="hero-stat-lbl">Simulations Run</div>
+                    </div>
+                    <div class="hero-stat-item">
+                        <div class="hero-stat-val" style="color:var(--accent-green);">94%</div>
+                        <div class="hero-stat-lbl">AI Accuracy</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Profile Card -->
+            <div class="card" style="padding:2rem; margin-bottom:1.25rem;">
+                <h2 class="section-title" style="margin-bottom:1.5rem;">
+                    <i class="fa-solid fa-user-pen"></i> Edit Profile
+                </h2>
+
+                <form onsubmit="event.preventDefault(); showSaveSuccess();">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label">Full Name</label>
+                            <input type="text" value="Grey Matter" placeholder="Your name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Role</label>
+                            <select>
+                                <option selected>Founder</option>
+                                <option>Investor</option>
+                                <option>Analyst</option>
+                                <option>Student</option>
+                                <option>Researcher</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" value="grey.matter@marketmind.ai" placeholder="your@email.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Age</label>
+                        <input type="number" value="32" min="13" max="120" placeholder="Age">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Gender</label>
+                        <select>
+                            <option selected>Male</option>
+                            <option>Female</option>
+                            <option>Non-binary</option>
+                            <option>Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Short Bio</label>
+                        <input type="text" value="Building the future of fintech financing."
+                            placeholder="One-liner about you">
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-5">
+                        <button type="button" class="btn btn-outline">Cancel</button>
+                        <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk"></i> Save
+                            Changes</button>
+                    </div>
+                </form>
+
+                <!-- Success message (hidden) -->
+                <div id="save-success"
+                    style="display:none; margin-top:1rem; padding:0.75rem 1rem; background:var(--green-dim); border:1px solid rgba(16,185,129,0.25); border-radius:var(--r-md); color:#34d399; font-size:0.875rem; display:none; align-items:center; gap:0.5rem;">
+                    <i class="fa-solid fa-circle-check"></i> Profile updated successfully!
+                </div>
+            </div>
+
+            <!-- Preferences Card -->
+            <div class="card" style="padding:2rem; margin-bottom:1.25rem;">
+                <h2 class="section-title" style="margin-bottom:1rem;">
+                    <i class="fa-solid fa-sliders"></i> Preferences
+                </h2>
+
+                <div class="pref-row">
+                    <div>
+                        <div class="pref-title">Email Notifications</div>
+                        <div class="pref-sub">Receive daily market digest emails</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="pref-row">
+                    <div>
+                        <div class="pref-title">AI Insights Alerts</div>
+                        <div class="pref-sub">Get notified on high-impact signals</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="pref-row">
+                    <div>
+                        <div class="pref-title">Dark Mode</div>
+                        <div class="pref-sub">Always use dark theme</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="pref-row">
+                    <div>
+                        <div class="pref-title">Weekly Digest</div>
+                        <div class="pref-sub">Curated Sunday briefing from our AI</div>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+            </div>
+
+
+            <!-- Danger Zone -->
+            <div class="danger-zone">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <div style="font-weight:700; font-size:0.95rem; color:#f87171; margin-bottom:0.25rem;">Delete
+                            Account</div>
+                        <div class="text-xs text-muted">Permanently remove your account and all associated data.</div>
+                    </div>
+                    <button class="btn btn-danger btn-sm">Delete Account</button>
+                </div>
+            </div>
+
+        </div><!-- /profile-container -->
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        // ── Profile form IDs ──────────────────────────────────────────────
+        const nameInput = document.querySelector('input[type="text"][value="Grey Matter"]');
+        const roleSelect = document.querySelector('select');
+        const ageInput = document.querySelector('input[type="number"]');
+        const genderSel = document.querySelectorAll('select')[1];
+
+        let profileId = null;
+
+        // Load profile from Supabase on page load
+        (async () => {
+            try {
+                const p = await DB.getProfile();
+                if (p) {
+                    profileId = p.id;
+                    if (nameInput) nameInput.value = p.name || 'Grey Matter';
+                    if (roleSelect) roleSelect.value = p.profession || 'Founder';
+                    if (ageInput) ageInput.value = p.age || 28;
+                    if (genderSel) genderSel.value = p.gender || 'Prefer not to say';
+                    // Update header avatar name
+                    const heroName = document.querySelector('.profile-name');
+                    if (heroName) heroName.textContent = p.name || 'Grey Matter';
+                }
+            } catch (e) {
+                console.warn('[Profile] Supabase load failed:', e.message);
+            }
+        })();
+
+        async function showSaveSuccess() {
+            // Save to Supabase
+            if (profileId) {
+                try {
+                    await DB.updateProfile(profileId, {
+                        name: nameInput?.value || 'Grey Matter',
+                        profession: roleSelect?.value || 'Founder',
+                        age: parseInt(ageInput?.value) || 28,
+                        gender: genderSel?.value || 'Prefer not to say',
+                        updated_at: new Date().toISOString(),
+                    });
+                } catch (e) {
+                    console.warn('[Profile] Save failed:', e.message);
+                }
+            }
+            const el = document.getElementById('save-success');
+            el.style.display = 'flex';
+            setTimeout(() => { el.style.display = 'none'; }, 3500);
+        }
+    </script>
+</body>
+
+</html>

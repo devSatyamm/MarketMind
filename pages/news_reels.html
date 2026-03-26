@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | Insight Reels</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .btn-analyse {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
+            color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+            border: none;
+            padding: 0.6rem 1.4rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-analyse:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(99, 102, 241, 0.6);
+            filter: brightness(1.1);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(4, 8, 15, 0.8);
+            backdrop-filter: blur(12px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .modal-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-strong);
+            border-radius: 16px;
+            width: 100%;
+            max-width: 550px;
+            padding: 1.75rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem; right: 1rem;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            background: none; border: none; cursor: pointer;
+        }
+
+        .modal-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-tab {
+            padding-bottom: 0.75rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .modal-tab.active {
+            color: var(--accent-cyan);
+        }
+
+        .modal-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 0; width: 100%; height: 2px;
+            background: var(--accent-cyan);
+        }
+
+        .analysis-progress-container {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+
+        .analysis-progress-bar {
+            height: 100%;
+            width: 78%;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #10b981);
+            border-radius: 4px;
+        }
+
+        .impact-tags-row {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem;
+        }
+
+        .action-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 1.5rem;
+        }
+
+        .action-card {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 10px;
+            display: flex; align-items: center; gap: 0.75rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .action-card:hover {
+            border-color: var(--accent-blue);
+            background: var(--blue-dim);
+        }
+
+        .pulse {
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(99, 102, 241, 0.4); }
+            100% { box-shadow: 0 0 0 15px rgba(99, 102, 241, 0); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <a href="../index.html" class="logo">
+            <span class="logo-icon-sm"><i class="fa-solid fa-cube"></i></span>
+            MARKET<span class="logo-sub">MIND</span>
+        </a>
+
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search reels, topics, or analysts…">
+        </div>
+
+        <nav class="nav-menu">
+            <a href="../dashboard.html" class="nav-item" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="strategy.html" class="nav-item" data-i18n="nav.simulations">Simulations</a>
+            <a href="funding.html" class="nav-item" data-i18n="nav.funding">Funding</a>
+            <a href="vc_forge.html" class="nav-item" data-i18n="nav.vcforge">VC Forge</a>
+            <a href="global_policies.html" class="nav-item" data-i18n="nav.policies">Policies</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+            <button class="btn btn-icon btn-ghost relative">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-gear"></i></button>
+            <a href="profile.html" class="profile-avatar-sm">
+                <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile">
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>Insight Reels</h1>
+                <p>Curated AI-narrated market breakdowns — fast, dense, and analyst-grade.</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn-analyse pulse" onclick="openAnalyseModal()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Analyse
+                </button>
+                <button class="btn btn-primary"><i class="fa-solid fa-bookmark"></i> Saved</button>
+            </div>
+        </div>
+
+        <!-- Category tabs -->
+        <div class="tab-group text-sm" style="margin-bottom:2rem;">
+            <div class="tab-btn active">All</div>
+            <div class="tab-btn">Finance</div>
+            <div class="tab-btn">Tech</div>
+            <div class="tab-btn">Geopolitics</div>
+            <div class="tab-btn">Energy</div>
+        </div>
+
+        <!-- Reels feed -->
+        <div class="reels-container">
+
+            <!-- Reel 1 -->
+            <article class="reel-card">
+                <div class="reel-thumb">
+                    <i class="fa-solid fa-microchip"></i>
+                    <div class="play-overlay"><i class="fa-solid fa-play" style="margin-left:3px;"></i></div>
+                </div>
+                <div class="reel-content">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="badge badge-blue">Tech</span>
+                            <span class="text-xs text-muted">2 min watch</span>
+                            <span class="text-xs text-muted">•</span>
+                            <span class="text-xs text-muted">1 hour ago</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-2" style="cursor:pointer; transition:color 0.2s;"
+                            onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color=''">
+                            NVIDIA's New Sovereign AI Strategy
+                        </h2>
+                        <p class="text-sm text-muted leading-relaxed">Deep dive into how nations are building their own
+                            AI infrastructure. We analyze the $30B implications for semiconductor supply chains over the
+                            next 5 years.</p>
+                        <div class="tags">
+                            <span class="badge badge-blue">#Semiconductors</span>
+                            <span class="badge badge-cyan">#Geopolitics</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold text-green flex items-center gap-1"><i
+                                    class="fa-solid fa-arrow-trend-up"></i> High Impact</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="btn btn-icon btn-ghost"><i class="fa-regular fa-bookmark"></i></button>
+                            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-share-nodes"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Reel 2 -->
+            <article class="reel-card">
+                <div class="reel-thumb">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <div class="play-overlay"><i class="fa-solid fa-play" style="margin-left:3px;"></i></div>
+                </div>
+                <div class="reel-content">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="badge badge-yellow">Macro</span>
+                            <span class="text-xs text-muted">5 min watch</span>
+                            <span class="text-xs text-muted">•</span>
+                            <span class="text-xs text-muted">3 hours ago</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-2" style="cursor:pointer; transition:color 0.2s;"
+                            onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color=''">
+                            The End of Zero Interest Rates?
+                        </h2>
+                        <p class="text-sm text-muted leading-relaxed">What the latest Federal Reserve meeting minutes
+                            really mean for VCs and startup valuations in 2026. Is the era of cheap capital gone
+                            forever?</p>
+                        <div class="tags">
+                            <span class="badge badge-yellow">#Macro</span>
+                            <span class="badge badge-yellow">#VentureCapital</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                        <span class="text-xs font-bold text-yellow flex items-center gap-1"><i
+                                class="fa-solid fa-triangle-exclamation"></i> Regulatory Risk</span>
+                        <div class="flex gap-2">
+                            <button class="btn btn-icon btn-ghost"><i class="fa-regular fa-bookmark"></i></button>
+                            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-share-nodes"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Reel 3 -->
+            <article class="reel-card">
+                <div class="reel-thumb">
+                    <i class="fa-solid fa-dna"></i>
+                    <div class="play-overlay"><i class="fa-solid fa-play" style="margin-left:3px;"></i></div>
+                </div>
+                <div class="reel-content">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="badge badge-green">Biotech</span>
+                            <span class="text-xs text-muted">3 min watch</span>
+                            <span class="text-xs text-muted">•</span>
+                            <span class="text-xs text-muted">5 hours ago</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-2" style="cursor:pointer; transition:color 0.2s;"
+                            onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color=''">
+                            Biotech's Generative Moment
+                        </h2>
+                        <p class="text-sm text-muted leading-relaxed">AlphaFold 3 just changed the game. We explore 5
+                            startups that are already using it to accelerate drug discovery by 10x, and what that means
+                            for pharma giants.</p>
+                        <div class="tags">
+                            <span class="badge badge-green">#Biotech</span>
+                            <span class="badge badge-green">#GenAI</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                        <span class="text-xs font-bold text-green flex items-center gap-1"><i
+                                class="fa-solid fa-arrow-trend-up"></i> Investment Opp</span>
+                        <div class="flex gap-2">
+                            <button class="btn btn-icon btn-ghost"><i class="fa-regular fa-bookmark"></i></button>
+                            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-share-nodes"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Reel 4 -->
+            <article class="reel-card">
+                <div class="reel-thumb">
+                    <i class="fa-solid fa-solar-panel"></i>
+                    <div class="play-overlay"><i class="fa-solid fa-play" style="margin-left:3px;"></i></div>
+                </div>
+                <div class="reel-content">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="badge badge-cyan">Energy</span>
+                            <span class="text-xs text-muted">4 min watch</span>
+                            <span class="text-xs text-muted">•</span>
+                            <span class="text-xs text-muted">8 hours ago</span>
+                        </div>
+                        <h2 class="text-xl font-bold mb-2" style="cursor:pointer; transition:color 0.2s;"
+                            onmouseover="this.style.color='#60a5fa'" onmouseout="this.style.color=''">
+                            Clean Energy Capex Hits $1.7 Trillion
+                        </h2>
+                        <p class="text-sm text-muted leading-relaxed">Global renewable investment surpasses fossil fuels
+                            for the first time in history. We break down which geographies and technologies are
+                            attracting the most capital.</p>
+                        <div class="tags">
+                            <span class="badge badge-cyan">#CleanTech</span>
+                            <span class="badge badge-green">#ESG</span>
+                        </div>
+                    </div>
+                    <div class="flex justify-between items-center mt-4 pt-4 border-t">
+                        <span class="text-xs font-bold text-cyan flex items-center gap-1"><i
+                                class="fa-solid fa-bolt"></i> Milestone</span>
+                        <div class="flex gap-2">
+                            <button class="btn btn-icon btn-ghost"><i class="fa-regular fa-bookmark"></i></button>
+                            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-share-nodes"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+        </div><!-- /reels-container -->
+    </div>
+
+    <!-- AI Analyse Modal -->
+    <div id="analyseModal" class="modal-overlay" onclick="handleOverlayClick(event)">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAnalyseModal()">&times;</button>
+            <h2 class="text-xl font-bold mb-4">AI Market Analyst</h2>
+
+            <div id="modalInputView">
+                <div class="modal-tabs">
+                    <div class="modal-tab active" id="tabLink" onclick="switchAnalyseTab('link')">Paste Link</div>
+                    <div class="modal-tab" id="tabText" onclick="switchAnalyseTab('text')">Paste Text</div>
+                </div>
+
+                <div id="linkInput" class="mb-4">
+                    <input type="text" id="newsUrl" placeholder="https://news-source.com/article/market-update..." class="w-full">
+                </div>
+                <div id="textInput" class="mb-4" style="display:none;">
+                    <textarea id="newsContent" placeholder="Describe the news event or paste text here..." rows="5" class="w-full"></textarea>
+                </div>
+
+                <button class="btn btn-primary w-full py-3" onclick="runAnalysis()">
+                    <i class="fa-solid fa-rocket mr-2"></i> Run AI Analysis
+                </button>
+            </div>
+
+            <div id="modalResultView" style="display:none;">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm font-semibold">Truth Detection</span>
+                    <span class="text-xs font-bold text-green">Credibility Score: 78% True</span>
+                </div>
+                <div class="analysis-progress-container">
+                    <div class="analysis-progress-bar"></div>
+                </div>
+
+                <div class="mt-6">
+                    <h3 class="text-sm font-bold mb-2 uppercase tracking-wide text-secondary">Summary</h3>
+                    <ul class="text-sm text-muted list-disc ml-4 space-y-2">
+                        <li>Major institutional shift towards sustainable energy infrastructure.</li>
+                        <li>Projected $12B capital injection into regional battery storage.</li>
+                        <li>Neutral impact on short-term consumer pricing, bullish on 2027 forecasts.</li>
+                    </ul>
+                </div>
+
+                <div class="impact-tags-row">
+                    <span class="badge badge-blue">Stock Market</span>
+                    <span class="badge badge-yellow">Global Economy</span>
+                    <span class="badge badge-cyan">Tech Sector</span>
+                </div>
+
+                <div class="action-grid">
+                    <div class="action-card" onclick="window.location.href='strategy.html'">
+                        <i class="fa-solid fa-chart-line text-blue"></i>
+                        <span class="text-xs">Simulations</span>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='funding.html'">
+                        <i class="fa-solid fa-hand-holding-dollar text-green"></i>
+                        <span class="text-xs">Fundings</span>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='global_policies.html'">
+                        <i class="fa-solid fa-gavel text-violet"></i>
+                        <span class="text-xs">Policies</span>
+                    </div>
+                    <div class="action-card" onclick="window.location.href='global_policies.html'">
+                        <i class="fa-solid fa-shield-halved text-cyan"></i>
+                        <span class="text-xs">Rules</span>
+                    </div>
+                </div>
+                
+                <button class="btn btn-ghost w-full mt-6 text-xs" onclick="resetAnalyseModal()">Analyze Another News</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/i18n.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../script.js"></script>
+    <script>
+        function openAnalyseModal() {
+            document.getElementById('analyseModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeAnalyseModal() {
+            document.getElementById('analyseModal').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        function handleOverlayClick(e) {
+            if (e.target.id === 'analyseModal') closeAnalyseModal();
+        }
+
+        function switchAnalyseTab(tab) {
+            const isLink = tab === 'link';
+            document.getElementById('tabLink').classList.toggle('active', isLink);
+            document.getElementById('tabText').classList.toggle('active', !isLink);
+            document.getElementById('linkInput').style.display = isLink ? 'block' : 'none';
+            document.getElementById('textInput').style.display = isLink ? 'none' : 'block';
+        }
+
+        function runAnalysis() {
+            const btn = event.currentTarget;
+            const originalContent = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin mr-2"></i> Analyzing...';
+            btn.disabled = true;
+
+            setTimeout(() => {
+                document.getElementById('modalInputView').style.display = 'none';
+                document.getElementById('modalResultView').style.display = 'block';
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+            }, 1800);
+        }
+
+        function resetAnalyseModal() {
+            document.getElementById('modalInputView').style.display = 'block';
+            document.getElementById('modalResultView').style.display = 'none';
+            document.getElementById('newsUrl').value = '';
+            document.getElementById('newsContent').value = '';
+        }
+    </script>
+</body>
+
+</html>

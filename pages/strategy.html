@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MarketMind | Simulations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        :root {
+            --sim-bg: #080c14;
+            --sim-card: #0d1424;
+            --sim-border: rgba(255,255,255,0.07);
+            --sim-border-bright: rgba(255,255,255,0.14);
+            --accent-blue: #3b82f6;
+            --accent-indigo: #6366f1;
+            --accent-cyan: #22d3ee;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-amber: #f59e0b;
+            --accent-violet: #8b5cf6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --font-mono: 'IBM Plex Mono', monospace;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--sim-bg);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+        }
+
+        /* ── Grid noise overlay ── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(99,102,241,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(99,102,241,0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrap { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 2rem 4rem; }
+
+        /* ── Hero ── */
+        .sim-hero {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+        }
+        .sim-engine-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.25rem 0.8rem;
+            border-radius: 999px;
+            background: rgba(99,102,241,0.1);
+            border: 1px solid rgba(99,102,241,0.25);
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: #818cf8;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            font-family: var(--font-mono);
+        }
+        .sim-hero h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, #f1f5f9 0%, #a5b4fc 55%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.75rem;
+        }
+        .sim-hero p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            max-width: 480px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /* ── Controls bar ── */
+        .controls-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        .role-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--sim-card);
+            border: 1px solid var(--sim-border-bright);
+            border-radius: 999px;
+            padding: 0.4rem 0.5rem 0.4rem 1rem;
+        }
+        .role-pill label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            white-space: nowrap;
+        }
+        #roleSelect {
+            background: rgba(99,102,241,0.12);
+            border: 1px solid rgba(99,102,241,0.3);
+            color: #a5b4fc;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            cursor: pointer;
+            outline: none;
+            font-family: 'Inter', sans-serif;
+        }
+        #roleSelect option { background: #0d1424; color: white; }
+
+        /* ── Mode toggle ── */
+        .mode-toggle {
+            display: flex;
+            background: var(--sim-card);
+            border: 1px solid var(--sim-border);
+            border-radius: 12px;
+            padding: 4px;
+            gap: 4px;
+        }
+        .toggle-btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            transition: all 0.25s ease;
+            letter-spacing: 0.02em;
+            font-family: 'Space Grotesk', sans-serif;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+        }
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            color: white;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.35);
+        }
+
+        /* ── Views ── */
+        .sim-view { display: none; }
+        .sim-view.active { display: block; }
+
+        /* ── Input card ── */
+        .input-card {
+            border-radius: 16px;
+            border: 1px solid var(--sim-border);
+            padding: 1.75rem 2rem;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .input-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+        }
+        .input-card.impact-card { background: rgba(34,211,238,0.03); border-color: rgba(34,211,238,0.15); }
+        .input-card.impact-card::before { background: linear-gradient(90deg, transparent, rgba(34,211,238,0.4), transparent); }
+        .input-card.strategy-card { background: rgba(99,102,241,0.03); border-color: rgba(99,102,241,0.15); }
+        .input-card.strategy-card::before { background: linear-gradient(90deg, transparent, rgba(99,102,241,0.4), transparent); }
+
+        .input-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .input-card p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+
+        textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--sim-border-bright);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            padding: 1rem;
+            resize: vertical;
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            transition: border-color 0.2s;
+        }
+        textarea:focus { outline: none; border-color: rgba(99,102,241,0.5); }
+        textarea::placeholder { color: var(--text-muted); }
+
+        .run-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            font-family: 'Space Grotesk', sans-serif;
+            letter-spacing: 0.02em;
+        }
+        .run-btn.cyan-btn {
+            background: linear-gradient(135deg, #0891b2, #22d3ee);
+            color: #001a20;
+            box-shadow: 0 4px 20px rgba(34,211,238,0.25);
+        }
+        .run-btn.indigo-btn {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+        }
+        .run-btn:hover { transform: translateY(-1px); filter: brightness(1.1); }
+        .run-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* ── Results layout ── */
+        .animate-in { animation: fadeUp 0.4s ease-out forwards; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* ── Section card ── */
+        .s-card {
+            background: var(--sim-card);
+            border: 1px solid var(--sim-border);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+            position: relative;
+        }
+        .s-card-title {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* ── Impact layout: 3-col ── */
+        .impact-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.25rem;
+        }
+        .impact-left { display: flex; flex-direction: column; gap: 1.25rem; }
+        .impact-right { display: flex; flex-direction: column; gap: 1.25rem; }
+
+        /* ── Market rows ── */
+        .market-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.75rem;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--sim-border);
+        }
+        .market-row .label { font-size: 0.8rem; color: var(--text-secondary); }
+        .mkt-badge {
+            font-size: 0.72rem;
+            font-weight: 700;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+        }
+        .mkt-up   { background: rgba(16,185,129,0.12); color: #10b981; border: 1px solid rgba(16,185,129,0.2); }
+        .mkt-down { background: rgba(239,68,68,0.12);  color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+        .mkt-flat { background: rgba(245,158,11,0.12); color: #f59e0b; border: 1px solid rgba(245,158,11,0.2); }
+
+        /* ── Outlook pills ── */
+        .outlook-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .outlook-box {
+            padding: 0.75rem;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--sim-border);
+            text-align: center;
+        }
+        .outlook-label { font-size: 0.6rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; font-family: var(--font-mono); }
+        .outlook-val { font-weight: 800; font-size: 1rem; font-family: 'Space Grotesk', sans-serif; }
+        .col-green { color: #10b981; } .col-red { color: #ef4444; } .col-amber { color: #f59e0b; } .col-blue { color: #3b82f6; }
+
+        /* ── Event banner ── */
+        .event-banner {
+            background: rgba(99,102,241,0.06);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 12px;
+            padding: 1rem 1.25rem;
+            margin-bottom: 1.25rem;
+        }
+        .event-tag {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #818cf8;
+            margin-bottom: 4px;
+            font-family: var(--font-mono);
+        }
+        .event-text { font-size: 0.9rem; font-weight: 600; color: #e2e8f0; line-height: 1.5; }
+
+        /* ── Ripple chain ── */
+        .ripple-item {
+            display: flex;
+            gap: 0.9rem;
+            padding-bottom: 1rem;
+            position: relative;
+        }
+        .ripple-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 9px;
+            top: 20px;
+            bottom: 0;
+            width: 1px;
+            background: var(--sim-border);
+        }
+        .ripple-dot {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            font-weight: 700;
+        }
+        .dot-critical { background: rgba(239,68,68,0.2); border: 1px solid #ef4444; color: #ef4444; }
+        .dot-high     { background: rgba(251,146,60,0.2); border: 1px solid #fb923c; color: #fb923c; }
+        .dot-medium   { background: rgba(59,130,246,0.2); border: 1px solid #3b82f6; color: #3b82f6; }
+        .dot-low      { background: rgba(100,116,139,0.2); border: 1px solid #64748b; color: #64748b; }
+        .ripple-meta { font-size: 0.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 3px; font-family: var(--font-mono); }
+        .ripple-effect { font-size: 0.82rem; font-weight: 600; color: var(--text-primary); line-height: 1.5; }
+        .ripple-sectors { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+        .sector-pill { font-size: 0.6rem; padding: 1px 7px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid var(--sim-border); color: var(--text-muted); }
+
+        /* ── Role impact ── */
+        .role-impact-card {
+            background: rgba(99,102,241,0.04);
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 14px;
+            padding: 1.25rem 1.5rem;
+        }
+        .role-impact-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: #818cf8;
+            font-family: var(--font-mono);
+        }
+        .role-direct { font-size: 0.85rem; color: #cbd5e1; line-height: 1.65; margin-bottom: 1rem; }
+        .opp-risk-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+        .opp-box { padding: 0.75rem; border-radius: 10px; }
+        .opp-box.green-box { background: rgba(16,185,129,0.05); border: 1px solid rgba(16,185,129,0.15); }
+        .opp-box.red-box   { background: rgba(239,68,68,0.05);  border: 1px solid rgba(239,68,68,0.15); }
+        .opp-box-label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 4px; font-family: var(--font-mono); }
+        .opp-box.green-box .opp-box-label { color: #10b981; }
+        .opp-box.red-box   .opp-box-label { color: #ef4444; }
+        .opp-box-text { font-size: 0.75rem; color: #94a3b8; line-height: 1.5; }
+        .action-now {
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            background: rgba(99,102,241,0.08);
+            border: 1px solid rgba(99,102,241,0.25);
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+        .action-now-icon { color: #818cf8; font-size: 0.85rem; margin-top: 2px; }
+        .action-now-label { font-size: 0.58rem; font-weight: 700; color: #818cf8; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 3px; font-family: var(--font-mono); }
+        .action-now-text { font-size: 0.82rem; font-weight: 600; color: #e2e8f0; }
+
+        /* ── Schemes ── */
+        .scheme-item {
+            padding: 0.85rem;
+            border-radius: 10px;
+            background: rgba(245,158,11,0.04);
+            border: 1px solid rgba(245,158,11,0.14);
+            margin-bottom: 0.6rem;
+        }
+        .scheme-name { font-size: 0.78rem; font-weight: 700; color: #fbbf24; margin-bottom: 3px; }
+        .scheme-why  { font-size: 0.7rem; color: #64748b; margin-bottom: 5px; line-height: 1.5; }
+        .scheme-action { font-size: 0.68rem; color: #10b981; display: flex; align-items: center; gap: 4px; }
+
+        /* ── Watch next ── */
+        .watch-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--sim-border);
+        }
+        .watch-item:last-child { border-bottom: none; }
+        .watch-num {
+            min-width: 22px; height: 22px;
+            border-radius: 50%;
+            background: rgba(34,211,238,0.1);
+            color: #22d3ee;
+            font-size: 0.6rem;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono);
+            flex-shrink: 0;
+        }
+        .watch-text { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+
+        /* ── Chart card ── */
+        .chart-wrap { height: 240px; }
+
+        /* ── Strategy layout ── */
+        .strategy-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+        .strategy-left  { display: flex; flex-direction: column; gap: 1.25rem; }
+        .strategy-right { display: flex; flex-direction: column; gap: 1.25rem; }
+
+        /* ── Viability score ── */
+        .viability-bar-wrap { margin-bottom: 1rem; }
+        .viability-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+        .viability-num { font-size: 2rem; font-weight: 900; font-family: 'Space Grotesk', sans-serif; }
+        .viability-label { font-size: 0.65rem; color: var(--text-muted); font-family: var(--font-mono); }
+        .viability-bar-bg { height: 6px; border-radius: 99px; background: rgba(255,255,255,0.06); overflow: hidden; }
+        .viability-bar-fill { height: 100%; border-radius: 99px; transition: width 1s ease; }
+
+        /* ── Metrics row ── */
+        .metrics-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+        .metric-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--sim-border);
+            border-radius: 10px;
+            padding: 0.9rem;
+            text-align: center;
+        }
+        .metric-label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 4px; font-family: var(--font-mono); }
+        .metric-val   { font-size: 1rem; font-weight: 800; font-family: 'Space Grotesk', sans-serif; }
+
+        /* ── Phase cards ── */
+        .phase-card {
+            border-radius: 10px;
+            padding: 1rem 1.1rem;
+            border: 1px solid var(--sim-border);
+            background: rgba(255,255,255,0.015);
+            margin-bottom: 0.6rem;
+        }
+        .phase-card.urgent  { border-left: 3px solid #ef4444; }
+        .phase-card.warning { border-left: 3px solid #f59e0b; }
+        .phase-card.upcoming{ border-left: 3px solid #3b82f6; }
+        .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+        .phase-title { font-size: 0.85rem; font-weight: 700; }
+        .phase-dur { font-size: 0.6rem; font-family: var(--font-mono); color: var(--text-muted); }
+        .phase-milestone { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; line-height: 1.4; }
+        .phase-actions { display: flex; flex-wrap: wrap; gap: 4px; }
+        .phase-action-tag { font-size: 0.6rem; padding: 2px 7px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid var(--sim-border); color: #64748b; }
+
+        /* ── Risk items ── */
+        .risk-item {
+            padding: 0.8rem;
+            border-radius: 10px;
+            background: rgba(239,68,68,0.03);
+            border: 1px solid rgba(239,68,68,0.1);
+            margin-bottom: 0.6rem;
+        }
+        .risk-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .risk-name { font-size: 0.78rem; font-weight: 600; }
+        .risk-prob { font-size: 0.65rem; font-weight: 700; font-family: var(--font-mono); padding: 1px 8px; border-radius: 4px; }
+        .prob-high   { background: rgba(239,68,68,0.15); color: #ef4444; }
+        .prob-medium { background: rgba(245,158,11,0.15); color: #f59e0b; }
+        .prob-low    { background: rgba(16,185,129,0.15); color: #10b981; }
+        .risk-mit { font-size: 0.7rem; color: #64748b; }
+
+        /* ── Actions list ── */
+        .action-item { display: flex; align-items: flex-start; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid var(--sim-border); }
+        .action-item:last-child { border-bottom: none; }
+        .action-icon { color: #10b981; font-size: 0.75rem; margin-top: 3px; }
+        .action-text { font-size: 0.8rem; color: #94a3b8; line-height: 1.5; }
+
+        /* ── Policy items ── */
+        .policy-item { padding: 0.75rem; border-radius: 8px; background: rgba(99,102,241,0.04); border: 1px solid rgba(99,102,241,0.12); margin-bottom: 0.5rem; }
+        .policy-name { font-size: 0.75rem; font-weight: 700; color: #a5b4fc; margin-bottom: 2px; }
+        .policy-org  { font-size: 0.6rem; color: var(--text-muted); margin-bottom: 3px; font-family: var(--font-mono); }
+        .policy-benefit { font-size: 0.7rem; color: #64748b; }
+
+        /* ── Verdict ── */
+        .verdict-card {
+            padding: 1rem 1.25rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid var(--sim-border-bright);
+        }
+        .verdict-label { font-size: 0.58rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 6px; font-family: var(--font-mono); }
+        .verdict-text { font-size: 0.85rem; font-style: italic; color: #cbd5e1; line-height: 1.65; }
+
+        /* ── Competitors ── */
+        .comp-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+        .comp-tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 99px; background: rgba(255,255,255,0.04); border: 1px solid var(--sim-border-bright); color: #94a3b8; }
+
+        /* ── AI badge ── */
+        .ai-badge-row { display: flex; justify-content: flex-end; gap: 0.4rem; align-items: center; margin-bottom: 0.75rem; }
+        .ai-badge { font-size: 0.6rem; padding: 2px 8px; border-radius: 99px; background: rgba(99,102,241,0.1); color: #818cf8; border: 1px solid rgba(99,102,241,0.2); font-family: var(--font-mono); }
+        .ai-via { font-size: 0.6rem; color: var(--text-muted); }
+
+        /* ── Error ── */
+        .error-box { padding: 1rem 1.25rem; border-radius: 12px; background: rgba(239,68,68,0.05); border: 1px solid rgba(239,68,68,0.2); color: #f87171; font-size: 0.85rem; }
+
+        /* ── Persona tag (hero) ── */
+        .persona-selector-container { display: flex; align-items: center; background: var(--sim-card); border: 1px solid var(--sim-border-bright); padding: 0.25rem 0.5rem; border-radius: 999px; }
+        .persona-label { font-size: 0.65rem; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-right: 0.5rem; margin-left: 0.75rem; font-family: var(--font-mono); }
+        .role-dropdown { background: transparent; border: none; color: var(--text-primary); font-weight: 700; padding: 0.5rem 1rem; font-size: 0.9rem; cursor: pointer; outline: none; }
+        .role-dropdown option { background: #0f172a; color: white; }
+
+        /* Sakha Floating Button */
+        .sakha-float-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 999;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            color: white;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(99,102,241,0.4);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
+        .sakha-float-btn:hover { transform: scale(1.1) rotate(5deg); }
+        .sakha-float-btn.show { display: flex; animation: bounceIn 0.6s ease; }
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.15); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .sakha-tooltip {
+            position: absolute;
+            right: 70px;
+            background: #1e293b;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .sakha-float-btn:hover .sakha-tooltip { opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <a href="../index.html" class="logo">
+            <span class="logo-icon-sm"><i class="fa-solid fa-cube"></i></span>
+            MARKET<span class="logo-sub">MIND</span>
+        </a>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search strategies, scenarios…">
+        </div>
+        <nav class="nav-menu">
+            <a href="../dashboard.html" class="nav-item">Dashboard</a>
+            <a href="strategy.html" class="nav-item active">Simulations</a>
+            <a href="funding.html" class="nav-item">Funding</a>
+            <a href="vc_forge.html" class="nav-item">VC Forge</a>
+            <a href="global_policies.html" class="nav-item">Policies</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <button class="btn btn-icon btn-ghost relative"><i class="fa-regular fa-bell"></i><span class="notif-dot"></span></button>
+            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-gear"></i></button>
+            <a href="profile.html" class="profile-avatar-sm">
+                <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile">
+            </a>
+        </div>
+    </header>
+
+    <div class="page-wrap">
+
+        <!-- Hero -->
+        <div class="sim-hero">
+            <div class="sim-engine-tag">
+                <i class="fa-solid fa-fire-flame-curved" style="color:#f97316;"></i>
+                OpenRouter · Consequence Engine
+            </div>
+            <h1>Simulate the world<br>in your own way</h1>
+            <p>Enter an idea or paste a news event — AI will model ripple effects, risks, and opportunities across markets, sectors, and time.</p>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls-bar">
+            <div class="role-pill">
+                <label>Simulating as</label>
+                <select id="roleSelect">
+                    <option value="Founder">🚀 Founder / Entrepreneur</option>
+                    <option value="Investor">💰 VC / Angel Investor</option>
+                    <option value="Student">🎓 Student / Learner</option>
+                    <option value="MSME Owner">🏭 MSME Owner</option>
+                    <option value="Policy Maker">🏛️ Policy Maker</option>
+                    <option value="Day Trader">📈 Day Trader</option>
+                </select>
+            </div>
+            <div class="mode-toggle">
+                <button id="btnMyself" class="toggle-btn active" onclick="switchSimMode('myself')">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="margin-right:6px;"></i>Strategy Forge
+                </button>
+                <button id="btnNews" class="toggle-btn" onclick="switchSimMode('news')">
+                    <i class="fa-solid fa-bolt" style="margin-right:6px;"></i>Impact Simulator
+                </button>
+            </div>
+        </div>
+
+        <!-- ── IMPACT SIMULATOR VIEW ── -->
+        <div id="newsView" class="sim-view">
+            <div class="input-card impact-card">
+                <h3><i class="fa-solid fa-newspaper" style="color:#22d3ee;"></i> Impact Analytics Simulator</h3>
+                <p>Paste a news headline, URL, economic event, or social trend to simulate its ripple effects across global markets.</p>
+                <textarea id="newsTextInput" placeholder="e.g., RBI announces unexpected 0.5% rate hike in India..." rows="3"></textarea>
+                <button class="run-btn cyan-btn" onclick="runNewsSimulation(this)">
+                    <i class="fa-solid fa-bolt"></i> Simulate Impact
+                </button>
+            </div>
+
+            <div id="newsResults" style="display:none;" class="animate-in">
+
+                <!-- AI badge -->
+                <div class="ai-badge-row">
+                    <span class="ai-badge" id="news-ai-badge">Gemini 2.0</span>
+                    <span class="ai-via">via OpenRouter</span>
+                </div>
+
+                <!-- Event summary -->
+                <div class="event-banner" id="event-summary-banner">
+                    <div class="event-tag"><i class="fa-solid fa-circle-dot" style="margin-right:4px;"></i> Signal · AI Confidence —%</div>
+                    <div class="event-text">—</div>
+                </div>
+
+                <!-- Role impact (full width) -->
+                <div class="role-impact-card" id="role-impact-card" style="margin-bottom:1.25rem;">
+                    <div class="role-impact-header"><i class="fa-solid fa-user-circle"></i> Role Impact</div>
+                    <div class="role-direct" id="role-direct">—</div>
+                    <div class="opp-risk-grid">
+                        <div class="opp-box green-box">
+                            <div class="opp-box-label">Opportunity</div>
+                            <div class="opp-box-text" id="role-opp">—</div>
+                        </div>
+                        <div class="opp-box red-box">
+                            <div class="opp-box-label">Risk</div>
+                            <div class="opp-box-text" id="role-risk">—</div>
+                        </div>
+                    </div>
+                    <div class="action-now" style="margin-top:0.75rem;">
+                        <i class="fa-solid fa-bolt action-now-icon"></i>
+                        <div>
+                            <div class="action-now-label">Action Now</div>
+                            <div class="action-now-text" id="role-action">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main 2-col layout -->
+                <div class="impact-layout">
+                    <!-- Left col -->
+                    <div class="impact-left">
+
+                        <!-- Market impact -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-chart-line"></i> Market Impact</div>
+                            <div style="display:flex;flex-direction:column;gap:6px;">
+                                <div class="market-row"><span class="label">Stocks</span><span class="mkt-badge mkt-flat" id="stocks-badge">—</span></div>
+                                <div class="market-row"><span class="label">Crypto</span><span class="mkt-badge mkt-flat" id="crypto-badge">—</span></div>
+                                <div class="market-row"><span class="label">Forex</span><span class="mkt-badge mkt-flat"  id="forex-badge">—</span></div>
+                                <div class="market-row"><span class="label">Bonds</span><span class="mkt-badge mkt-flat"  id="bonds-badge">—</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Future prediction -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-eye"></i> Future Prediction</div>
+                            <div class="outlook-grid">
+                                <div class="outlook-box">
+                                    <div class="outlook-label">Short Term</div>
+                                    <div class="outlook-val" id="outlook-short">—</div>
+                                </div>
+                                <div class="outlook-box">
+                                    <div class="outlook-label">Long Term</div>
+                                    <div class="outlook-val" id="outlook-long">—</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Global effect -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-globe"></i> Global Effect</div>
+                            <p style="font-size:0.82rem;color:#94a3b8;line-height:1.65;" id="global-effect">—</p>
+                        </div>
+
+                        <!-- Ripple chain -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-wave-square"></i> Ripple Consequence Chain</div>
+                            <div id="ripple-chain-list"></div>
+                        </div>
+
+                        <!-- Matched schemes -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-star" style="color:#f59e0b;"></i> Matched Schemes</div>
+                            <div id="schemes-list"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right col -->
+                    <div class="impact-right">
+
+                        <!-- Chart -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-chart-area"></i> Impact Visualization</div>
+                            <div class="chart-wrap"><canvas id="newsImpactChart"></canvas></div>
+                        </div>
+
+                        <!-- Sectors -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-industry"></i> Affected Sectors</div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;" id="sectors-grid">
+                                <div style="padding:0.85rem;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--sim-border);text-align:center;">
+                                    <i class="fa-solid fa-microchip" style="font-size:1.1rem;color:#3b82f6;margin-bottom:6px;display:block;"></i>
+                                    <div style="font-size:0.7rem;font-weight:700;">Tech</div>
+                                </div>
+                                <div style="padding:0.85rem;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--sim-border);text-align:center;">
+                                    <i class="fa-solid fa-bolt" style="font-size:1.1rem;color:#f59e0b;margin-bottom:6px;display:block;"></i>
+                                    <div style="font-size:0.7rem;font-weight:700;">Energy</div>
+                                </div>
+                                <div style="padding:0.85rem;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--sim-border);text-align:center;">
+                                    <i class="fa-solid fa-building-columns" style="font-size:1.1rem;color:#8b5cf6;margin-bottom:6px;display:block;"></i>
+                                    <div style="font-size:0.7rem;font-weight:700;">Finance</div>
+                                </div>
+                                <div style="padding:0.85rem;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid var(--sim-border);text-align:center;">
+                                    <i class="fa-solid fa-truck-fast" style="font-size:1.1rem;color:#22d3ee;margin-bottom:6px;display:block;"></i>
+                                    <div style="font-size:0.7rem;font-weight:700;">Logistics</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Watch next -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-radar" style="color:#22d3ee;"></i> Watch Next</div>
+                            <div id="watch-next-list"></div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── STRATEGY FORGE VIEW ── -->
+        <div id="myselfView" class="sim-view active">
+            <div class="input-card strategy-card">
+                <h3><i class="fa-solid fa-lightbulb" style="color:#f59e0b;"></i> Strategy Generation</h3>
+                <p>Paste your business idea, product concept, or strategic plan to generate a consequence-aware roadmap.</p>
+                <textarea id="ideaInput" placeholder="e.g., Launching a decentralized fintech platform for micro-lending in SE Asia..." rows="4"></textarea>
+                <button class="run-btn indigo-btn" onclick="runMyselfSimulation(this)">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Strategy
+                </button>
+            </div>
+
+            <div id="myselfResults" style="display:none;" class="animate-in">
+
+                <!-- AI badge -->
+                <div class="ai-badge-row">
+                    <span class="ai-badge" id="strategy-ai-badge">Gemini 2.0</span>
+                    <span class="ai-via">via OpenRouter</span>
+                </div>
+
+                <!-- Verdict (full width) -->
+                <div class="verdict-card" id="strategy-verdict" style="margin-bottom:1.25rem;">
+                    <div class="verdict-label">AI Verdict</div>
+                    <div class="verdict-text" id="verdict-text">—</div>
+                </div>
+
+                <div class="strategy-layout">
+                    <!-- Left -->
+                    <div class="strategy-left">
+
+                        <!-- Viability + metrics -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-gauge-high"></i> Idea Assessment</div>
+                            <div class="viability-bar-wrap">
+                                <div class="viability-header">
+                                    <div>
+                                        <div class="viability-num" id="viability-num" style="color:#10b981;">—</div>
+                                        <div class="viability-label">Viability Score / 100</div>
+                                    </div>
+                                </div>
+                                <div class="viability-bar-bg">
+                                    <div class="viability-bar-fill" id="viability-bar" style="width:0%;background:#10b981;"></div>
+                                </div>
+                            </div>
+                            <div class="metrics-row">
+                                <div class="metric-box">
+                                    <div class="metric-label">Risk Level</div>
+                                    <div class="metric-val" id="risk-level">—</div>
+                                </div>
+                                <div class="metric-box">
+                                    <div class="metric-label">Market Fit</div>
+                                    <div class="metric-val" id="market-fit">—</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phases -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-map-location-dot"></i> Strategic Roadmap</div>
+                            <div id="phases-list"></div>
+                        </div>
+
+                        <!-- Competitors -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-crosshairs"></i> Watch These Competitors</div>
+                            <div class="comp-tags" id="comp-tags"></div>
+                        </div>
+
+                    </div>
+
+                    <!-- Right -->
+                    <div class="strategy-right">
+
+                        <!-- Growth chart -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-chart-bar"></i> Growth Projections</div>
+                            <div class="chart-wrap"><canvas id="growthChart"></canvas></div>
+                        </div>
+
+                        <!-- Suggested actions -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-list-check"></i> Suggested Actions</div>
+                            <div id="actions-list"></div>
+                        </div>
+
+                        <!-- Relevant policies -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-landmark" style="color:#818cf8;"></i> Relevant Policies & Schemes</div>
+                            <div id="policies-list"></div>
+                        </div>
+
+                        <!-- Risks -->
+                        <div class="s-card">
+                            <div class="s-card-title"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> Risk Assessment</div>
+                            <div id="risks-list"></div>
+                        </div>
+
+                    </div>
+                </div>
+
+    <button id="sakha-trigger" class="sakha-float-btn" onclick="SimEngine.openSakha()">
+        <i class="fa-solid fa-atom"></i>
+        <div class="sakha-tooltip">Ask Sakha about this simulation</div>
+    </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../js/i18n.js"></script>
+    <script src="../js/secrets.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/sakha.js"></script>
+    <script src="../js/simulation.js"></script>
+    <script src="../script.js"></script>
+    <script>
+        function switchSimMode(mode) {
+            const isMyself = mode === 'myself';
+            document.getElementById('btnMyself').classList.toggle('active', isMyself);
+            document.getElementById('btnNews').classList.toggle('active', !isMyself);
+            document.getElementById('myselfView').classList.toggle('active', isMyself);
+            document.getElementById('newsView').classList.toggle('active', !isMyself);
+        }
+
+        function runMyselfSimulation(btn) {
+            const idea = document.getElementById('ideaInput')?.value?.trim();
+            SimEngine.runIdea(idea, btn);
+        }
+
+        function runNewsSimulation(btn) {
+            const text = document.getElementById('newsTextInput')?.value?.trim();
+            SimEngine.runNews(text, btn);
+        }
+    </script>
+</body>
+</html>

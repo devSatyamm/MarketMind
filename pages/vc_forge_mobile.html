@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | VC Forge (Mobile)</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-bottom: 100px;
+        }
+
+        /* Space for nav */
+        .container {
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .persona-selector {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            justify-content: flex-start;
+        }
+
+        .persona-btn {
+            padding: 10px 20px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            border-radius: 12px;
+        }
+
+        .persona-btn.active {
+            background: var(--neon-purple);
+            color: white;
+            border-color: var(--neon-purple);
+        }
+
+        .workspace {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-panel,
+        .output-panel {
+            min-height: auto;
+            padding: 20px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            color: white;
+            border-radius: 8px;
+        }
+
+        .simulate-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple));
+            border: none;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .output-panel {
+            display: none;
+        }
+
+        .output-panel.visible {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Nav styles delegated to style.css */
+    </style>
+</head>
+
+<body>
+    <h3 style="text-align: center; margin-top: 20px;" class="glow-text-blue">VC FORGE</h3>
+
+    <div class="container">
+        <div class="persona-selector">
+            <button class="persona-btn active" onclick="selectPersona('student')">Student</button>
+            <button class="persona-btn" onclick="selectPersona('founder')">Founder</button>
+            <button class="persona-btn" onclick="selectPersona('investor')">Investor</button>
+        </div>
+
+        <div class="workspace">
+            <!-- Input -->
+            <div class="glass-panel input-panel">
+                <h2 id="form-title" style="font-size: 1.2rem; margin-bottom: 10px;">Student Simulation</h2>
+                <form id="sim-form" onsubmit="event.preventDefault(); runSimulation();">
+                    <div class="form-group"><label>Monthly Budget</label><input type="number" placeholder="15000"></div>
+                    <div class="form-group"><label>Field</label><select>
+                            <option>CS / AI</option>
+                            <option>Finance</option>
+                        </select></div>
+                    <div class="form-group" id="extra-field"><label>Loan Amount</label><input type="number"
+                            placeholder="500000"></div>
+                    <button class="simulate-btn">Run Sim</button>
+                </form>
+            </div>
+
+            <!-- Output -->
+            <div class="glass-panel output-panel" id="output-panel">
+                <h2 style="font-size: 1.2rem; color: var(--neon-purple);">Results</h2>
+                <div style="text-align: center; margin: 20px 0;">
+                    <div style="font-size: 2.5rem; color: var(--neon-red); font-weight: bold;">78/100</div>
+                    <p style="color: var(--neon-red);">HIGH RISK</p>
+                </div>
+                <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px;">
+                    <strong>AI Recommendation:</strong><br>
+                    <span style="font-size: 0.9rem; color: var(--text-muted);">Hiring freeze expected. Upskill in
+                        Agentic AI. Apply for grants.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="glass-panel">
+        <div class="nav-links">
+            <a href="../dashboard_mobile.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="news_reels_mobile.html"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></a>
+            <a href="vc_forge_mobile.html" class="active"><i class="fa-solid fa-microchip"></i><span>Forge</span></a>
+            <a href="funding_mobile.html"><i class="fa-solid fa-magnifying-glass-dollar"></i><span>Funding</span></a>
+            <a href="global_policies_mobile.html"><i class="fa-solid fa-file-contract"></i><span>Policies</span></a>
+        </div>
+    </nav>
+
+    <script>
+        function selectPersona(type) {
+            document.querySelectorAll('.persona-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            const title = document.getElementById('form-title');
+            const extra = document.getElementById('extra-field');
+            if (type === 'student') { title.innerText = "Student Sim"; extra.innerHTML = '<label>Loan Amount</label><input type="number">'; }
+            else if (type === 'founder') { title.innerText = "Startup Sim"; extra.innerHTML = '<label>Runway (Months)</label><input type="number">'; }
+            else { title.innerText = "Portfolio Sim"; extra.innerHTML = '<label>Tech %</label><input type="number">'; }
+            document.getElementById('output-panel').classList.remove('visible');
+        }
+        function runSimulation() {
+            const btn = document.querySelector('.simulate-btn');
+            const original = btn.innerText;
+            btn.innerText = "CALCULATING...";
+            setTimeout(() => {
+                btn.innerText = original;
+                document.getElementById('output-panel').classList.add('visible');
+            }, 1000);
+        }
+    </script>
+</body>
+
+</html>

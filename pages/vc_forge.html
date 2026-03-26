@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | VC Forge</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        /* ── Step Progress ── */
+        .step-track {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 2.5rem;
+        }
+
+        .step-node {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .step-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            transition: all 0.3s;
+        }
+
+        .step-circle.active {
+            border-color: var(--accent-indigo);
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            box-shadow: 0 0 14px rgba(99, 102, 241, 0.35);
+        }
+
+        .step-circle.done {
+            border-color: var(--accent-green);
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+        }
+
+        .step-lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+            width: 70px;
+        }
+
+        .step-lbl.active {
+            color: #a5b4fc;
+        }
+
+        .step-connector {
+            width: 80px;
+            height: 2px;
+            background: var(--border);
+            margin-bottom: 1.25rem;
+        }
+
+        .step-connector.done {
+            background: var(--accent-green);
+        }
+
+        /* ── Persona Cards ── */
+        .persona-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .persona-card {
+            border: 2px solid var(--border);
+            background: var(--bg-card);
+            border-radius: var(--r-lg);
+            padding: 1.75rem 1.25rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .persona-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-3px);
+        }
+
+        .persona-card.selected {
+            border-color: var(--accent-indigo);
+            background: rgba(99, 102, 241, 0.08);
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+        }
+
+        .persona-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .persona-title {
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .persona-desc {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ── Idea Step ── */
+        .idea-textarea {
+            width: 100%;
+            min-height: 140px;
+            resize: vertical;
+            padding: 1rem;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            transition: border-color 0.2s;
+        }
+
+        .idea-textarea:focus {
+            outline: none;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .tag-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .tag-pill {
+            padding: 0.3rem 0.85rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tag-pill:hover,
+        .tag-pill.selected {
+            border-color: var(--accent-indigo);
+            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        /* ── Loading ── */
+        .loading-overlay {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading-overlay.active {
+            display: block;
+        }
+
+        .ai-spinner {
+            width: 56px;
+            height: 56px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent-indigo);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-steps {
+            list-style: none;
+            text-align: left;
+            max-width: 320px;
+            margin: 1.5rem auto 0;
+        }
+
+        .loading-steps li {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .loading-steps li .ld-icon {
+            width: 20px;
+            text-align: center;
+        }
+
+        .loading-steps li.done-step {
+            color: var(--accent-green);
+        }
+
+        .loading-steps li.active-step {
+            color: #a5b4fc;
+        }
+
+        /* ── Output ── */
+        .viability-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: conic-gradient(var(--accent-indigo) 0% 72%, var(--border) 72% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            margin: 0 auto 1rem;
+        }
+
+        .viability-inner {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .viability-num {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--accent-indigo);
+        }
+
+        .viability-lbl {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+        }
+
+        /* Judges */
+        .judges-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .judge-card {
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 1.25rem;
+            transition: all 0.2s;
+        }
+
+        .judge-card:hover {
+            border-color: rgba(99, 102, 241, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .judge-verdict {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .judge-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.35rem;
+        }
+
+        .judge-quote {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            line-height: 1.55;
+            font-style: italic;
+        }
+
+        .judge-score {
+            margin-top: 0.75rem;
+            font-size: 1.2rem;
+            font-weight: 800;
+        }
+
+        /* Scheme list */
+        .scheme-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            margin-bottom: 0.75rem;
+            background: var(--bg-body);
+            transition: all 0.2s;
+        }
+
+        .scheme-item:hover {
+            border-color: rgba(99, 102, 241, 0.35);
+        }
+
+        .scheme-match {
+            min-width: 48px;
+            text-align: center;
+            font-weight: 800;
+            font-size: 1rem;
+            color: var(--accent-green);
+        }
+
+        .scheme-body small {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        /* Policy alert */
+        .policy-alert {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.85rem;
+            padding: 0.9rem 1rem;
+            border-radius: var(--r-md);
+            margin-bottom: 0.75rem;
+            font-size: 0.85rem;
+        }
+
+        .policy-alert.red {
+            background: rgba(239, 68, 68, 0.07);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .policy-alert.yellow {
+            background: rgba(245, 158, 11, 0.07);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .policy-alert.green {
+            background: rgba(16, 185, 129, 0.07);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .policy-icon {
+            font-size: 1.1rem;
+            margin-top: 0.05rem;
+        }
+
+        .policy-title {
+            font-weight: 700;
+            margin-bottom: 0.2rem;
+        }
+
+        .policy-body {
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ── Output tabs ── */
+        .out-tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .out-tab {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-bottom: 2px solid transparent;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: -1px;
+        }
+
+        .out-tab.active {
+            border-color: var(--accent-indigo);
+            color: var(--text-primary);
+        }
+
+        .out-panel {
+            display: none;
+        }
+
+        .out-panel.active {
+            display: block;
+        }
+
+        /* Insight summary */
+        .insight-row {
+            display: flex;
+            gap: 0.65rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .insight-chip {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.75rem;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            background: var(--bg-body);
+            border: 1px solid var(--border);
+        }
+
+        /* Step card */
+        .step-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <a href="../index.html" class="logo">
+            <span class="logo-icon-sm"><i class="fa-solid fa-cube"></i></span>
+            MARKET<span class="logo-sub">MIND</span>
+        </a>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search the forge…">
+        </div>
+        <nav class="nav-menu">
+            <a href="../dashboard.html" class="nav-item">Dashboard</a>
+            <a href="strategy.html" class="nav-item">Simulations</a>
+            <a href="funding.html" class="nav-item">Funding</a>
+            <a href="vc_forge.html" class="nav-item active">VC Forge</a>
+            <a href="global_policies.html" class="nav-item">Policies</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <button class="btn btn-icon btn-ghost relative">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-gear"></i></button>
+            <a href="profile.html" class="profile-avatar-sm">
+                <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile">
+            </a>
+        </div>
+    </header>
+
+    <div class="container" style="max-width:900px;">
+
+        <!-- Page Header -->
+        <div class="page-header" style="flex-direction:column; align-items:flex-start; gap:0.4rem; margin-bottom:2rem;">
+            <div class="flex items-center gap-3">
+                <div
+                    style="width:42px; height:42px; border-radius:12px; background:linear-gradient(135deg,rgba(99,102,241,0.3),rgba(59,130,246,0.15)); display:flex; align-items:center; justify-content:center; font-size:1.25rem; color:#a5b4fc;">
+                    <i class="fa-solid fa-flask-vial"></i>
+                </div>
+                <h1 style="font-size:1.8rem;">VC Forge <span
+                        style="font-size:0.85rem; font-weight:500; color:var(--text-muted); vertical-align:middle; margin-left:0.3rem; border:1px solid rgba(99,102,241,0.3); border-radius:999px; padding:0.15rem 0.65rem; background:rgba(99,102,241,0.08);">AI
+                        PITCH ADVISOR</span></h1>
+            </div>
+            <p class="text-muted text-sm">Describe your idea → get Shark Tank-style AI critique, matched govt schemes
+                &amp; policy alerts.</p>
+        </div>
+
+        <!-- Step Progress -->
+        <div class="step-track" id="step-track">
+            <div class="step-node">
+                <div class="step-circle active" id="sc-1">1</div>
+                <div class="step-lbl active" id="sl-1">Who are you?</div>
+            </div>
+            <div class="step-connector" id="conn-1"></div>
+            <div class="step-node">
+                <div class="step-circle" id="sc-2">2</div>
+                <div class="step-lbl" id="sl-2">Your Idea</div>
+            </div>
+            <div class="step-connector" id="conn-2"></div>
+            <div class="step-node">
+                <div class="step-circle" id="sc-3">3</div>
+                <div class="step-lbl" id="sl-3">AI Analysis</div>
+            </div>
+        </div>
+
+        <!-- ═══ STEP 1 ═══ -->
+        <div id="step-1" class="step-card">
+            <h2 class="section-title mb-5"><i class="fa-solid fa-user-tag"></i> Tell us about yourself</h2>
+
+            <div class="persona-grid">
+                <div class="persona-card selected" onclick="selectPersona(this,'student')">
+                    <div class="persona-icon">🎓</div>
+                    <div class="persona-title">Student</div>
+                    <div class="persona-desc">Learning, side-projects, grant eligibility, low capital</div>
+                </div>
+                <div class="persona-card" onclick="selectPersona(this,'founder')">
+                    <div class="persona-icon">🚀</div>
+                    <div class="persona-title">Founder</div>
+                    <div class="persona-desc">Building a startup, fundraising, scaling a product</div>
+                </div>
+                <div class="persona-card" onclick="selectPersona(this,'explorer')">
+                    <div class="persona-icon">🔍</div>
+                    <div class="persona-title">Explorer</div>
+                    <div class="persona-desc">Just researching, validating, curious about feasibility</div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="form-group">
+                    <label class="form-label">Available Budget (₹ or $)</label>
+                    <input type="text" id="budget-input" placeholder="e.g. ₹5,00,000 or $10,000" value="">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Market</label>
+                    <select id="market-select">
+                        <option value="india">India</option>
+                        <option value="us">United States</option>
+                        <option value="eu">European Union</option>
+                        <option value="global">Global / Multi-market</option>
+                        <option value="sea">South-East Asia</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex justify-end mt-5">
+                <button class="btn btn-primary" onclick="goToStep2()">Continue <i
+                        class="fa-solid fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+        <!-- ═══ STEP 2 ═══ -->
+        <div id="step-2" class="step-card" style="display:none;">
+            <h2 class="section-title mb-4"><i class="fa-solid fa-lightbulb"></i> Describe your idea</h2>
+            <p class="text-sm text-muted mb-4">Be specific — mention the problem you solve, who your customers are, and
+                how you plan to make money. The more detail you give, the sharper the AI analysis.</p>
+
+            <textarea class="idea-textarea" id="idea-text"
+                placeholder="e.g. I want to build an app that uses AI to help Indian farmers predict crop prices 3 months in advance using satellite data and local mandi records, so they can time their harvest and avoid selling at a loss..."></textarea>
+
+            <div class="mt-3">
+                <div class="text-xs text-muted mb-2 font-bold">Quick tag your sector (optional):</div>
+                <div class="tag-selector" id="tag-selector">
+                    <div class="tag-pill" onclick="toggleTag(this)">🤖 AI / ML</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">🌾 AgriTech</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">💊 HealthTech</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">⚡ CleanTech</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">💸 FinTech</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">🏭 Manufacturing</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">🛍️ D2C / E-com</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">📚 EdTech</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">🚗 Mobility</div>
+                    <div class="tag-pill" onclick="toggleTag(this)">🔒 DeepTech</div>
+                </div>
+            </div>
+
+            <div class="flex justify-between mt-5">
+                <button class="btn btn-outline" onclick="goToStep1()"><i class="fa-solid fa-arrow-left"></i>
+                    Back</button>
+                <button class="btn btn-primary" onclick="runAI()"><i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Analyse My Idea</button>
+            </div>
+        </div>
+
+        <!-- ═══ LOADING ═══ -->
+        <div id="loading-view" class="step-card" style="display:none;">
+            <div class="loading-overlay active">
+                <div class="ai-spinner"></div>
+                <div class="font-bold text-lg mb-1">AI Panel Convening…</div>
+                <div class="text-sm text-muted">Our virtual Shark Tank judges are reviewing your pitch</div>
+                <ul class="loading-steps" id="loading-steps">
+                    <li id="ls-1"><span class="ld-icon"><i class="fa-solid fa-circle-notch fa-spin"></i></span> Reading
+                        your pitch &amp; context…</li>
+                    <li id="ls-2" style="opacity:0.4;"><span class="ld-icon"><i
+                                class="fa-regular fa-lightbulb"></i></span> Scoring viability across 12 dimensions…</li>
+                    <li id="ls-3" style="opacity:0.4;"><span class="ld-icon"><i
+                                class="fa-solid fa-building-columns"></i></span> Matching govt schemes &amp; grants…
+                    </li>
+                    <li id="ls-4" style="opacity:0.4;"><span class="ld-icon"><i class="fa-solid fa-gavel"></i></span>
+                        Scanning 45 regulatory databases…</li>
+                    <li id="ls-5" style="opacity:0.4;"><span class="ld-icon"><i
+                                class="fa-regular fa-check-circle"></i></span> Compiling your Forge Report…</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- ═══ STEP 3 — OUTPUT ═══ -->
+        <div id="step-3" style="display:none;">
+
+            <!-- Summary row -->
+            <div class="card mb-4"
+                style="padding:1.5rem; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;">
+                <div>
+                    <div class="text-xs text-muted uppercase tracking-widest mb-1 font-bold">Pitch Verdict</div>
+                    <div id="verdict-text" class="text-xl font-bold">Promising — Needs Refinement</div>
+                    <div class="insight-row mt-3">
+                        <div class="insight-chip"><span style="color:var(--accent-green);">●</span> <span
+                                id="chip-persona">Founder</span></div>
+                        <div class="insight-chip"><span style="color:var(--accent-blue);">●</span> <span
+                                id="chip-market">India Market</span></div>
+                        <div class="insight-chip"><span style="color:var(--accent-cyan);">●</span> <span
+                                id="chip-sector">AgriTech / AI</span></div>
+                        <div class="insight-chip"><span style="color:var(--accent-yellow);">●</span> <span
+                                id="chip-budget">Budget: ₹5L</span></div>
+                    </div>
+                </div>
+                <div style="text-align:center;">
+                    <div class="viability-ring" id="viability-ring">
+                        <div class="viability-inner">
+                            <div class="viability-num" id="viability-num">72</div>
+                            <div class="viability-lbl">Viability</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deep Review Section -->
+            <div id="deep-review-card" class="card mb-4" style="padding:1.5rem; background:rgba(99,102,241,0.03); border:1px solid rgba(99,102,241,0.2);">
+                <div class="flex items-center gap-2 mb-3">
+                    <i class="fa-solid fa-brain" style="color:var(--accent-indigo);"></i>
+                    <div class="text-xs text-muted uppercase tracking-widest font-bold">Venture Partner Deep Analysis</div>
+                </div>
+                <div id="deep-review-text" class="text-sm leading-relaxed" style="color:var(--text-secondary); white-space: pre-line;"></div>
+            </div>
+
+            <!-- Out Tabs -->
+            <div class="out-tabs">
+                <div class="out-tab active" onclick="switchTab(this,'tab-sharks')"><i
+                        class="fa-solid fa-user-tie mr-1"></i> Shark Panel</div>
+                <div class="out-tab" onclick="switchTab(this,'tab-schemes')"><i class="fa-solid fa-handshake mr-1"></i>
+                    Matched Schemes</div>
+                <div class="out-tab" onclick="switchTab(this,'tab-policies')"><i class="fa-solid fa-gavel mr-1"></i>
+                    Policy Alerts</div>
+                <div class="out-tab" onclick="switchTab(this,'tab-roadmap')"><i class="fa-solid fa-road mr-1"></i> AI
+                    Roadmap</div>
+            </div>
+
+            <!-- Shark Panel tab -->
+            <div class="out-panel active" id="tab-sharks">
+                <div class="judges-grid" id="judges-grid">
+                    <!-- Dynamically populated -->
+                </div>
+
+                <div class="card mt-4" style="padding:1.5rem;">
+                    <div class="text-xs text-muted uppercase font-bold mb-3 tracking-widest">Panel Summary</div>
+                    <p class="text-sm leading-relaxed" id="panel-summary" style="color:var(--text-secondary);"></p>
+                    <div class="grid grid-cols-3 gap-3 mt-4">
+                        <div class="metric-box">
+                            <div class="text-xs text-muted mb-1">Market Size</div>
+                            <div class="font-bold" id="m-market">$2.4B</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="text-xs text-muted mb-1">TAM Capture</div>
+                            <div class="font-bold" id="m-tam">0.3–1.2%</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="text-xs text-muted mb-1">Break-even</div>
+                            <div class="font-bold" id="m-be">18–24 Mo</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Schemes tab -->
+            <div class="out-panel" id="tab-schemes">
+                <div id="schemes-list"></div>
+                <div class="text-center mt-4">
+                    <a href="funding.html" class="btn btn-outline"><i class="fa-solid fa-database"></i> Browse
+                        Full Scheme Database</a>
+                </div>
+            </div>
+
+            <!-- Policies tab -->
+            <div class="out-panel" id="tab-policies">
+                <div id="policies-list"></div>
+                <div class="text-center mt-4">
+                    <a href="global_policies.html" class="btn btn-outline"><i class="fa-solid fa-globe"></i> View Global
+                        Policy Database</a>
+                </div>
+            </div>
+
+            <!-- Roadmap tab -->
+            <div class="out-panel" id="tab-roadmap">
+                <div id="roadmap-list"></div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex gap-3 mt-6">
+                <button class="btn btn-outline" onclick="goToStep1()"><i class="fa-solid fa-rotate-left"></i> Start
+                    Over</button>
+                <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-download"></i> Export
+                    Report</button>
+            </div>
+
+        </div><!-- /step-3 -->
+    </div><!-- /container -->
+
+    <script src="../js/i18n.js"></script>
+    <script src="../script.js"></script>
+    <!-- AI Core Dependencies -->
+    <script src="../js/secrets.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/ai.js"></script>
+    <script>
+        // ══════════════════════════════════
+        //  STATE
+        // ══════════════════════════════════
+        let state = { persona: 'student', budget: '', market: 'india', idea: '', tags: [] };
+        let _aiResult = null;
+
+        // ══════════════════════════════════
+        //  STEP NAVIGATION
+        // ══════════════════════════════════
+        function setStepUI(step) {
+            [1, 2, 3].forEach(i => {
+                const el = document.getElementById('step-' + i);
+                if (el) el.style.display = 'none';
+            });
+            document.getElementById('loading-view').style.display = 'none';
+            document.getElementById('step-3').style.display = 'none';
+
+            for (let i = 1; i <= 3; i++) {
+                const sc = document.getElementById('sc-' + i);
+                const sl = document.getElementById('sl-' + i);
+                sc.className = 'step-circle';
+                sl.className = 'step-lbl';
+                if (i < step) { sc.classList.add('done'); sc.innerHTML = '<i class="fa-solid fa-check"></i>'; }
+                else if (i === step) { sc.classList.add('active'); sc.textContent = i; sl.classList.add('active'); }
+                else { sc.textContent = i; }
+            }
+            for (let i = 1; i <= 2; i++) {
+                document.getElementById('conn-' + i).className = 'step-connector' + (i < step ? ' done' : '');
+            }
+        }
+
+        function goToStep1() { setStepUI(1); document.getElementById('step-1').style.display = 'block'; }
+        function goToStep2() {
+            state.budget = document.getElementById('budget-input').value || '₹5,00,000';
+            state.market = document.getElementById('market-select').value;
+            setStepUI(2);
+            document.getElementById('step-2').style.display = 'block';
+        }
+
+        function selectPersona(el, type) {
+            document.querySelectorAll('.persona-card').forEach(c => c.classList.remove('selected'));
+            el.classList.add('selected');
+            state.persona = type;
+        }
+        function toggleTag(el) {
+            el.classList.toggle('selected');
+            const tag = el.textContent.trim();
+            if (el.classList.contains('selected')) { if (!state.tags.includes(tag)) state.tags.push(tag); }
+            else { state.tags = state.tags.filter(t => t !== tag); }
+        }
+
+        // ══════════════════════════════════
+        //  MAIN AI FLOW
+        // ══════════════════════════════════
+        async function runAI() {
+            state.idea = document.getElementById('idea-text').value.trim();
+            if (state.idea.length < 20) {
+                alert('Please describe your idea in at least a sentence or two for meaningful analysis.');
+                return;
+            }
+            state.tags = Array.from(document.querySelectorAll('.tag-pill.selected')).map(t => t.textContent.trim());
+
+            // Show loading
+            setStepUI(3);
+            document.getElementById('loading-view').style.display = 'block';
+
+            const steps = ['ls-1', 'ls-2', 'ls-3', 'ls-4', 'ls-5'];
+            let current = 0;
+            const interval = setInterval(() => {
+                if (current > 0) {
+                    const prev = document.getElementById(steps[current - 1]);
+                    if (prev) {
+                        prev.innerHTML = prev.innerHTML.replace('fa-spin', '').replace('fa-circle-notch', 'fa-check');
+                        prev.classList.add('done-step');
+                        prev.style.opacity = '1';
+                    }
+                }
+                if (current < steps.length) {
+                    const cur = document.getElementById(steps[current]);
+                    if (cur) { cur.style.opacity = '1'; cur.classList.add('active-step'); }
+                    current++;
+                }
+            }, 750);
+
+            // Call Gemini AI (with Supabase scheme overlay)
+            let dbSchemes = [];
+            try { dbSchemes = await DB.getSchemes({ market: state.market, limit: 5 }); } catch (e) { /* silent */ }
+
+            _aiResult = await AIService.analyseIdea({
+                persona:  state.persona,
+                budget:   state.budget,
+                market:   state.market,
+                idea:     state.idea,
+                tags:     state.tags
+            });
+
+            // If Supabase has live scheme data, merge it in
+            if (dbSchemes.length > 0) _aiResult._dbSchemes = dbSchemes;
+
+            // Persist pitch
+            try {
+                await DB.savePitch({
+                    persona: state.persona, budget: state.budget, market: state.market,
+                    idea: state.idea, tags: state.tags,
+                    viability: _aiResult.viability, verdict: _aiResult.verdict
+                });
+            } catch (e) { /* silent */ }
+
+            clearInterval(interval);
+            steps.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.innerHTML = el.innerHTML.replace('fa-spin','').replace('fa-circle-notch','fa-check'); el.classList.add('done-step'); el.style.opacity='1'; }
+            });
+            setTimeout(showOutput, 400);
+        }
+
+        // ══════════════════════════════════
+        //  RENDER OUTPUT FROM AI RESULT
+        // ══════════════════════════════════
+        function showOutput() {
+            const res = _aiResult;
+            
+            // Handle Joke/Nonsense Inputs
+            if (res._is_invalid) {
+                document.getElementById('loading-view').style.display = 'none';
+                document.getElementById('step-3').style.display = 'block';
+                document.getElementById('verdict-text').innerHTML = `<span style="color:var(--accent-red);font-weight:bold;">🚨 VALIDATION ERROR:</span> ${res.warning}`;
+                document.getElementById('viability-num').textContent = '0';
+                document.getElementById('deep-review').innerHTML = `<div class="p-6 text-center border-2 border-dashed border-red/20 rounded-xl bg-red/5">
+                    <i class="fa-solid fa-face-grin-tears text-4xl text-red mb-4"></i>
+                    <h3 class="text-xl font-bold mb-2">This is not a joke!</h3>
+                    <p class="text-muted">MarketMind is a professional strategic tool. Please enter a serious business idea or product concept to receive a deep venture capital analysis.</p>
+                    <button class="btn btn-primary mt-6" onclick="location.reload()">Try Again Honestly</button>
+                </div>`;
+                return;
+            }
+
+            document.getElementById('loading-view').style.display = 'none';
+            document.getElementById('step-3').style.display = 'block';
+
+            const score = res.viability;
+
+            // Source badge
+            const isLive = res._source === 'gemini';
+            const sourceBadge = isLive
+                ? '<span style="font-size:0.7rem;padding:0.15rem 0.6rem;border-radius:999px;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);color:#34d399;margin-left:0.5rem;">⚡ Gemini 2.0 Flash</span>'
+                : (res._error
+                    ? '<span style="font-size:0.7rem;padding:0.15rem 0.6rem;border-radius:999px;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);color:#fbbf24;margin-left:0.5rem;">⚠️ Offline Mode</span>'
+                    : '<span style="font-size:0.7rem;padding:0.15rem 0.6rem;border-radius:999px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.3);color:#a5b4fc;margin-left:0.5rem;">🔮 AI Mode</span>');
+
+            // Viability ring
+            document.getElementById('viability-ring').style.background =
+                `conic-gradient(var(--accent-indigo) 0% ${score}%, var(--border) ${score}% 100%)`;
+            document.getElementById('viability-num').textContent = score;
+
+            // Verdict
+            document.getElementById('verdict-text').innerHTML = (res.verdict || 'Analysis complete') + sourceBadge;
+
+            // Chips
+            const marketLabels = { india:'India Market', us:'US Market', eu:'EU Market', global:'Global Markets', sea:'SEA Market' };
+            document.getElementById('chip-persona').textContent = capitalize(state.persona);
+            document.getElementById('chip-market').textContent = marketLabels[state.market] || state.market;
+            document.getElementById('chip-sector').textContent = state.tags.slice(0,2).map(t => t.split(' ').slice(1).join(' ')).join(' / ') || 'General';
+            document.getElementById('chip-budget').textContent = 'Budget: ' + (state.budget || 'N/A');
+
+            // Deep Review
+            document.getElementById('deep-review-text').textContent = res.deep_review || '';
+
+            // Causal chain (if present) — inject after verdict
+            if (res.causal_chain && res.causal_chain.length) {
+                renderCausalChain(res.causal_chain);
+            }
+
+            // Panels
+            renderJudges(res.judges || []);
+
+            // Schemes — Supabase live data takes priority, else AI-generated
+            if (res._dbSchemes && res._dbSchemes.length > 0) {
+                renderDbSchemes(res._dbSchemes);
+            } else {
+                renderSchemes(res.schemes || []);
+            }
+
+            renderPolicies(res.policies || []);
+            renderRoadmap(res.roadmap || []);
+
+            // Panel summary
+            document.getElementById('panel-summary').textContent = res.panel_summary || '';
+
+            // Metrics
+            const m = res.metrics || {};
+            document.getElementById('m-market').textContent = m.market_size || '—';
+            document.getElementById('m-tam').textContent    = m.tam_capture  || '—';
+            document.getElementById('m-be').textContent     = m.break_even   || '—';
+        }
+
+        // ── Causal Chain ──────────────────────────────────────────────────────
+        function renderCausalChain(chains) {
+            // Insert a causal chain card before the tabs if not already there
+            if (!document.getElementById('causal-chain-card')) {
+                const tabs = document.querySelector('.out-tabs');
+                const card = document.createElement('div');
+                card.id = 'causal-chain-card';
+                card.className = 'card mb-4';
+                card.style.cssText = 'padding:1.25rem 1.5rem;';
+                tabs.parentNode.insertBefore(card, tabs);
+            }
+            const colorTheme = ['var(--accent-blue)','var(--accent-indigo)','var(--accent-cyan)'];
+            document.getElementById('causal-chain-card').innerHTML = `
+                <div class="text-xs text-muted uppercase font-bold mb-3 tracking-widest">🔗 Consequence Map</div>
+                ${chains.map((c,i) => `
+                    <div style="display:flex;align-items:baseline;gap:0.65rem;margin-bottom:0.6rem;">
+                        <span style="font-size:0.7rem;font-weight:700;min-width:18px;color:${colorTheme[i % 3]}">${i+1}</span>
+                        <span class="text-sm" style="color:var(--text-secondary);line-height:1.55;">${c}</span>
+                    </div>`).join('')}
+            `;
+        }
+
+        // ── Judge Cards ───────────────────────────────────────────────────────
+        function renderJudges(judges) {
+            const colorMap = { IN: 'var(--accent-green)', OUT: 'var(--accent-red)', MAYBE: 'var(--accent-yellow)' };
+            const textMap  = { IN: '#34d399', OUT: '#f87171', MAYBE: '#fbbf24' };
+            document.getElementById('judges-grid').innerHTML = judges.map(j => {
+                const type = (j.verdict_type || 'MAYBE').toUpperCase();
+                const color   = colorMap[type] || 'var(--accent-yellow)';
+                const txtClr  = textMap[type]  || '#fbbf24';
+                return `
+                <div class="judge-card">
+                    <div class="judge-verdict" style="color:${txtClr};">${j.emoji || '🎯'} ${j.verdict}</div>
+                    <div class="judge-name">${j.name}</div>
+                    <div class="text-xs text-muted mb-2">${j.role}</div>
+                    <div class="judge-quote">${j.quote}</div>
+                    <div class="judge-score" style="color:${color};">${j.score || '—'}<span class="text-xs text-muted font-normal">/100</span></div>
+                </div>`;
+            }).join('');
+        }
+
+        // ── Schemes (AI-generated) ────────────────────────────────────────────
+        function renderSchemes(schemes) {
+            document.getElementById('schemes-list').innerHTML = schemes.map(s => `
+            <div class="scheme-item">
+                <div class="scheme-match">${s.match}%<div style="font-size:0.65rem;font-weight:400;color:var(--text-muted);">Match</div></div>
+                <div class="scheme-body" style="flex:1;">
+                    <div class="font-bold text-sm">${s.name}</div>
+                    <small>${s.org} &nbsp;·&nbsp; ${s.amount} &nbsp;·&nbsp; <i class="fa-regular fa-calendar"></i> ${s.deadline}</small>
+                    <div class="text-sm text-muted mt-1" style="line-height:1.5;">${s.desc}</div>
+                </div>
+                <button class="btn btn-sm btn-outline" style="white-space:nowrap;align-self:flex-start;">Apply <i class="fa-solid fa-arrow-right"></i></button>
+            </div>`).join('');
+        }
+
+        // ── Schemes (Supabase live) ───────────────────────────────────────────
+        function renderDbSchemes(schemes) {
+            document.getElementById('schemes-list').innerHTML = schemes.map(s => `
+            <div class="scheme-item">
+                <div class="scheme-match">${s.probability === 'High' ? 92 : s.probability === 'Medium' ? 78 : 65}%<div style="font-size:0.65rem;font-weight:400;color:var(--text-muted);">Match</div></div>
+                <div class="scheme-body" style="flex:1;">
+                    <div class="font-bold text-sm">${s.name}</div>
+                    <small>${s.org} &nbsp;·&nbsp; ${s.amount}</small>
+                    ${s.days_left ? `<div style="font-size:0.7rem;color:var(--accent-cyan);margin-top:2px;">⏳ ${s.days_left} days left</div>` : ''}
+                </div>
+                <a href="${s.url || '#'}" target="_blank" class="btn btn-sm btn-outline" style="white-space:nowrap;align-self:flex-start;">Apply <i class="fa-solid fa-arrow-right"></i></a>
+            </div>`).join('');
+        }
+
+        // ── Policy Alerts ─────────────────────────────────────────────────────
+        function renderPolicies(policies) {
+            document.getElementById('policies-list').innerHTML = policies.map(p => `
+            <div class="policy-alert ${p.type}">
+                <div class="policy-icon">${p.icon}</div>
+                <div>
+                    <div class="policy-title">${p.title}</div>
+                    <div class="policy-body">${p.body}</div>
+                </div>
+            </div>`).join('');
+        }
+
+        // ── Roadmap ───────────────────────────────────────────────────────────
+        function renderRoadmap(items) {
+            const colorVars = { blue:'var(--accent-blue)', indigo:'var(--accent-indigo)', cyan:'var(--accent-cyan)', green:'var(--accent-green)', yellow:'var(--accent-yellow)', red:'var(--accent-red)' };
+            document.getElementById('roadmap-list').innerHTML = items.map(r => {
+                const color = colorVars[r.color_theme] || 'var(--accent-indigo)';
+                return `
+                <div style="margin-bottom:0.75rem;padding-left:1.5rem;border-left:3px solid ${color};">
+                    <div class="text-xs text-muted font-bold mb-1 uppercase tracking-widest">${r.week}</div>
+                    <div class="font-bold mb-1">${r.icon} ${r.title}</div>
+                    <div class="text-sm text-muted" style="line-height:1.6;">${r.body}</div>
+                </div>`;
+            }).join('');
+        }
+
+        // ══════════════════════════════════
+        //  HELPERS
+        // ══════════════════════════════════
+        function switchTab(el, panelId) {
+            document.querySelectorAll('.out-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.out-panel').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById(panelId).classList.add('active');
+        }
+        function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+    </script>
+
+</body>
+
+</html>

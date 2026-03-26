@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | Global Policies (Mobile)</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-bottom: 100px;
+        }
+
+        .mobile-header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .policy-card-mobile {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin: 10px 15px;
+            padding: 15px;
+        }
+
+        .policy-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--accent-indigo);
+            margin-bottom: 8px;
+            display: inline-block;
+        }
+
+        .country-selector-mobile {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding: 10px 15px;
+            scrollbar-width: none;
+        }
+
+        .country-selector-mobile::-webkit-scrollbar {
+            display: none;
+        }
+
+        .country-item {
+            flex: 0 0 auto;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .country-item.active {
+            border-color: var(--accent-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mobile-header">
+        <h3 class="glow-text-blue">GLOBAL POLICIES</h3>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">Rules & Regulations Database</p>
+    </div>
+
+    <div class="country-selector-mobile">
+        <div class="country-item active">🇺🇸 USA</div>
+        <div class="country-item">🇮🇳 India</div>
+        <div class="country-item">🇪🇺 EU</div>
+        <div class="country-item">🇬🇧 UK</div>
+        <div class="country-item">🇸🇬 Singapore</div>
+    </div>
+
+    <div class="policy-list">
+        <div class="policy-card-mobile">
+            <span class="policy-tag">TAXATION</span>
+            <h4 style="margin-bottom: 5px;">Section 174 Reform</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Changes to software R&D capitalization rules affecting startup runways.</p>
+        </div>
+        <div class="policy-card-mobile">
+            <span class="policy-tag">AI REGULATION</span>
+            <h4 style="margin-bottom: 5px;">Executive Order 14110</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Safe, Secure, and Trustworthy Development and Employment of Artificial Intelligence.</p>
+        </div>
+        <div class="policy-card-mobile">
+            <span class="policy-tag">TRADE</span>
+            <h4 style="margin-bottom: 5px;">CHIPS Act Compliance</h4>
+            <p style="font-size: 0.85rem; color: var(--text-secondary);">Guidelines for semiconductor startups receiving federal funding.</p>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="glass-panel">
+        <div class="nav-links">
+            <a href="../dashboard_mobile.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="news_reels_mobile.html"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></a>
+            <a href="vc_forge_mobile.html"><i class="fa-solid fa-microchip"></i><span>Forge</span></a>
+            <a href="funding_mobile.html"><i class="fa-solid fa-magnifying-glass-dollar"></i><span>Funding</span></a>
+            <a href="global_policies_mobile.html" class="active"><i class="fa-solid fa-file-contract"></i><span>Policies</span></a>
+        </div>
+    </nav>
+</body>
+
+</html>

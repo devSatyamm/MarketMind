@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | Profile (Mobile)</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-bottom: 100px;
+        }
+
+        .profile-container {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            gap: 20px;
+            max-width: 100%;
+            margin: 0;
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+
+        /* Nav styles delegated to style.css */
+    </style>
+</head>
+
+<body>
+    <div class="profile-header">
+        <h3 class="glow-text-blue">USER PROFILE</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">Manage your identity</p>
+    </div>
+
+    <div class="profile-container">
+        <div class="glass-panel">
+            <form class="profile-form" onsubmit="event.preventDefault(); alert('Profile Updated!');">
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="glass-input" value="Grey Matter" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Age</label>
+                    <input type="number" class="glass-input" placeholder="Enter your age">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Profession</label>
+                    <select class="glass-input">
+                        <option value="" disabled selected>Select Profession</option>
+                        <option value="student">Student</option>
+                        <option value="founder">Founder</option>
+                        <option value="investor">Investor</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Gender</label>
+                    <select class="glass-input">
+                        <option value="" disabled selected>Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="non-binary">Non-binary</option>
+                        <option value="prefer-not-to-say">Prefer not to say</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="cta-button" style="margin-top: 10px; width: 100%;">Update Profile</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="glass-panel">
+        <div class="nav-links">
+            <a href="../dashboard_mobile.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="news_reels_mobile.html"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></a>
+            <a href="vc_forge_mobile.html"><i class="fa-solid fa-microchip"></i><span>Forge</span></a>
+            <a href="funding_mobile.html"><i class="fa-solid fa-magnifying-glass-dollar"></i><span>Funding</span></a>
+            <a href="global_policies_mobile.html"><i class="fa-solid fa-file-contract"></i><span>Policies</span></a>
+        </div>
+    </nav>
+</body>
+
+</html>

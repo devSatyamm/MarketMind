@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | News Reels (Mobile)</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .btn-analyse-mobile {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-violet));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+            border: none;
+            margin-bottom: 5px;
+        }
+        /* Mobile Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(15px);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 3000; padding: 20px;
+        }
+        .modal-card {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 20px;
+            width: 100%;
+            padding: 1.5rem;
+            position: relative;
+            color: white;
+        }
+        .modal-close {
+            position: absolute; top: 1rem; right: 1rem;
+            color: #888; font-size: 1.5rem;
+            background: none; border: none;
+        }
+        .modal-tabs { display: flex; gap: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #333; }
+        .modal-tab { padding-bottom: 0.5rem; color: #666; font-size: 0.9rem; font-weight: 600; }
+        .modal-tab.active { color: var(--accent-cyan); border-bottom: 2px solid var(--accent-cyan); }
+        .analysis-progress { height: 6px; background: #222; border-radius: 3px; overflow: hidden; margin: 0.75rem 0; }
+        .analysis-bar { height: 100%; width: 78%; background: linear-gradient(90deg, #ef4444, #10b981); }
+        .action-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-top: 1rem; }
+        .action-card { background: #1a1a1a; padding: 0.6rem; border-radius: 12px; font-size: 0.75rem; text-align: center; border: 1px solid #333; }
+        body {
+            overflow: hidden;
+            background: black;
+        }
+
+        .reel-container {
+            height: 100vh;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        .reel {
+            height: 100vh;
+            width: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-size: cover;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .reel-overlay {
+            position: absolute;
+            bottom: 80px;
+            /* Moved up for nav */
+            left: 0;
+            width: 100%;
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .impact-badge {
+            background: rgba(255, 0, 60, 0.2);
+            border: 1px solid var(--neon-red);
+            color: var(--neon-red);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
+
+        .impact-badge.positive {
+            background: rgba(10, 255, 10, 0.2);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .reel-video-placeholder {
+            width: 100%;
+            height: 100%;
+            background: #111;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .controls {
+            position: absolute;
+            right: 10px;
+            bottom: 150px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 20;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: none;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+        }
+
+        .sim-hud {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid var(--neon-blue);
+            font-family: monospace;
+            font-size: 0.7rem;
+            color: var(--neon-blue);
+            z-index: 15;
+            pointer-events: none;
+        }
+
+        /* Nav styles delegated to style.css */
+    </style>
+</head>
+
+<body>
+
+    <div class="reel-container">
+        <!-- Reel 1 -->
+        <div class="reel">
+            <div class="reel-video-placeholder" style="background: radial-gradient(circle, #1a1a2e, #000);">[AI
+                SIMULATION:<br>OIL SHOCK]</div>
+            <div class="sim-hud">> CRUDE: +4.2%<br>> LOGISTICS: -1.8%</div>
+            <div class="reel-overlay">
+                <div class="impact-badge">High Risk</div>
+                <h2>Supply Chain Alert</h2>
+                <p>OPEC+ cuts trigger logistics failures.</p>
+            </div>
+            <div class="controls">
+                <button class="btn-analyse-mobile" onclick="openAnalyseModal()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+                <button class="control-btn"><i class="fa-solid fa-volume-high"></i></button>
+                <button class="control-btn"><i class="fa-solid fa-share-nodes"></i></button>
+                <button class="control-btn"><i class="fa-solid fa-circle-info"></i></button>
+            </div>
+        </div>
+        <!-- Reel 2 -->
+        <div class="reel">
+            <div class="reel-video-placeholder" style="background: radial-gradient(circle, #0f2027, #203a43, #2c5364);">
+                [AI SIMULATION:<br>TECH GRANT]</div>
+            <div class="sim-hud" style="color: var(--neon-green); border-color: var(--neon-green);">> FUNDING: $500M
+            </div>
+            <div class="reel-overlay">
+                <div class="impact-badge positive">Opportunity</div>
+                <h2>AI Govt Subsidy</h2>
+                <p>$500M grant for Gen-AI startups.</p>
+            </div>
+            <div class="controls">
+                <button class="btn-analyse-mobile" onclick="openAnalyseModal()">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+                <button class="control-btn"><i class="fa-solid fa-volume-high"></i></button>
+                <button class="control-btn"><i class="fa-solid fa-bookmark"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Navigation -->
+    <nav class="glass-panel">
+        <div class="nav-links">
+            <a href="../dashboard_mobile.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="news_reels_mobile.html" class="active"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></a>
+            <a href="vc_forge_mobile.html"><i class="fa-solid fa-microchip"></i><span>Forge</span></a>
+            <a href="funding_mobile.html"><i class="fa-solid fa-magnifying-glass-dollar"></i><span>Funding</span></a>
+            <a href="global_policies_mobile.html"><i class="fa-solid fa-file-contract"></i><span>Policies</span></a>
+        </div>
+    </nav>
+    <!-- AI Analysis Modal -->
+    <div id="analyseModal" class="modal-overlay" onclick="if(event.target==this) closeAnalyseModal()">
+        <div class="modal-card">
+            <button class="modal-close" onclick="closeAnalyseModal()">&times;</button>
+            <h3 class="font-bold mb-4">AI News Analysis</h3>
+
+            <div id="inputView">
+                <div class="modal-tabs">
+                    <div class="modal-tab active">Paste Link</div>
+                    <div class="modal-tab">Text</div>
+                </div>
+                <input type="text" placeholder="Paste news link here..." class="w-full mb-3" style="background:#222; border:1px solid #444; color:white; padding:12px; border-radius:10px;">
+                <button class="btn btn-primary w-full py-3" onclick="runAnalysis()">Run AI Analysis</button>
+            </div>
+
+            <div id="resultView" style="display:none;">
+                <div class="flex justify-between items-center text-xs mb-1">
+                    <span>Truth Detection</span>
+                    <span class="text-green">78% Verified</span>
+                </div>
+                <div class="analysis-progress"><div class="analysis-bar"></div></div>
+                <div class="mt-4">
+                    <p class="text-xs text-secondary mb-2">• High impact on oil & gas logistics</p>
+                    <p class="text-xs text-secondary mb-2">• Supply chain disruptions expected</p>
+                </div>
+                <div class="action-grid">
+                    <div class="action-card" onclick="location.href='strategy.html'">Simulate</div>
+                    <div class="action-card" onclick="location.href='funding.html'">Funding</div>
+                </div>
+                <button class="btn btn-ghost w-full mt-4 text-xs" onclick="resetModal()">New Analysis</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openAnalyseModal() {
+            document.getElementById('analyseModal').style.display = 'flex';
+        }
+        function closeAnalyseModal() {
+            document.getElementById('analyseModal').style.display = 'none';
+        }
+        function runAnalysis() {
+            const btn = event.currentTarget;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing...';
+            setTimeout(() => {
+                document.getElementById('inputView').style.display = 'none';
+                document.getElementById('resultView').style.display = 'block';
+                btn.innerHTML = 'Run AI Analysis';
+            }, 1500);
+        }
+        function resetModal() {
+            document.getElementById('inputView').style.display = 'block';
+            document.getElementById('resultView').style.display = 'none';
+        }
+    </script>
+</body>
+
+</html>

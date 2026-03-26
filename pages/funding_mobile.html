@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | Funding (Mobile)</title>
+    <link rel="stylesheet" href="../style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            padding-bottom: 110px;
+        }
+
+        .oracle-layout {
+            display: flex;
+            flex-direction: column;
+            padding-top: 10px;
+        }
+
+        .mobile-search-bar {
+            padding: 0 15px 15px;
+        }
+
+        .mobile-search-bar input {
+            width: 100%;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 12px 15px;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .horizontal-filters {
+            display: flex;
+            overflow-x: auto;
+            gap: 12px;
+            padding: 0 15px 15px;
+            scrollbar-width: none;
+        }
+
+        .horizontal-filters::-webkit-scrollbar {
+            display: none;
+        }
+
+        .filter-pill {
+            flex: 0 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .filter-pill.active {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+
+        .schemes-list {
+            padding: 0 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .funding-card-mobile {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 18px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .card-header-mobile {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .scheme-icon-sm {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-blue);
+        }
+
+        .tag-row-mobile {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .tag-pill-sm {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .probability-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .prob-high { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .prob-med { background: rgba(59, 130, 246, 0.15); color: #3b82f6; }
+        .prob-low { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+
+        .action-row-mobile {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .btn-mobile {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .btn-mobile-primary {
+            background: var(--accent-blue);
+            color: white;
+            border: none;
+        }
+
+        .btn-mobile-outline {
+            background: transparent;
+            color: var(--text-primary);
+        }
+
+        /* Info Modal Mobile Styles */
+        .info-modal-mobile {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .info-modal-mobile.active {
+            display: flex;
+        }
+
+        .mobile-video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #111;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 15px 0;
+            border: 1px solid var(--border);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="mobile-header">
+        <h3 class="glow-text-blue">FUNDING ENGINE</h3>
+        <p style="color: var(--text-muted); font-size: 0.8rem;">Grants, Loans & VC Matcher</p>
+    </div>
+
+    <div class="oracle-layout">
+        <div class="mobile-search-bar">
+            <input type="text" id="schemeSearch" placeholder="Search grants, seed funds, VCs…">
+        </div>
+
+        <div class="horizontal-filters">
+            <div class="filter-pill" onclick="setSectorFilter(this, 'all')">All Sectors</div>
+            <div class="filter-pill" onclick="setSectorFilter(this, 'AI / Technology')">AI / Tech</div>
+            <div class="filter-pill" onclick="setSectorFilter(this, 'Green Energy')">Green Tech</div>
+            <div class="filter-pill" onclick="setSectorFilter(this, 'Manufacturing')">Industry</div>
+            <div class="filter-pill" onclick="setSectorFilter(this, 'Healthcare')">Health</div>
+        </div>
+
+        <div id="mobileGrid" class="schemes-list">
+            <!-- Dynamic schemes will be loaded here -->
+            <div style="text-align:center; padding: 40px; color: var(--text-muted);">
+                <i class="fa-solid fa-spinner fa-spin fa-2x mb-3"></i>
+                <p>Connecting to database…</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Info Modal -->
+    <div id="mobileInfoModal" class="info-modal-mobile">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h2 id="mTitle" style="font-size: 1.4rem; font-weight: 800; color: white;">Scheme Info</h2>
+            <button onclick="closeInfoModal()" style="background:none; border:none; color:white; font-size:1.5rem;"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+
+        <div id="mIcon" class="scheme-icon-sm" style="width:50px; height:50px; margin-bottom:10px;"></div>
+        <p id="mOrg" style="color: var(--accent-blue); font-weight: 700; font-size: 0.9rem;"></p>
+
+        <div style="margin-top: 20px;">
+            <h4 style="color: white; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Summary</h4>
+            <p id="mSummary" style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.6; margin-top: 8px;"></p>
+        </div>
+
+        <div class="mobile-video-placeholder">
+            <div style="text-align:center;">
+                <i class="fa-solid fa-play-circle fa-2x" style="color: var(--accent-blue);"></i>
+                <p style="font-size:0.7rem; color: var(--text-muted); margin-top:5px;">Guide: How to Apply</p>
+            </div>
+        </div>
+
+        <div style="background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border); margin-top: 10px;">
+            <h4 style="color: white; font-size: 0.75rem; text-transform: uppercase;">Quick Steps</h4>
+            <ul style="color: var(--text-secondary); font-size: 0.8rem; padding-left: 20px; margin-top: 8px;">
+                <li>Check eligibility criteria</li>
+                <li>Download mandatory templates</li>
+                <li>Submit via portal</li>
+            </ul>
+        </div>
+
+        <div style="margin-top: auto; padding: 20px 0;">
+            <a id="mApplyBtn" href="#" target="_blank" class="btn-mobile btn-mobile-primary" style="display:block; text-decoration:none; padding: 15px;">Proceed to Application</a>
+        </div>
+    </div>
+
+    <script src="../script.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script>
+        const grid = document.getElementById('mobileGrid');
+        const searchInput = document.getElementById('schemeSearch');
+        let allSchemes = [];
+        let activeSector = 'all';
+
+        // ── Info Modal Logic ──────────────────────────────────────────────────
+        window.openInfoModal = function(title, org, summary, icon, link) {
+            const modal = document.getElementById('mobileInfoModal');
+            document.getElementById('mTitle').textContent = title;
+            document.getElementById('mOrg').textContent = org;
+            document.getElementById('mSummary').textContent = summary;
+            document.getElementById('mIcon').innerHTML = `<i class="fa-solid ${icon}"></i>`;
+            document.getElementById('mApplyBtn').setAttribute('href', link);
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeInfoModal = function() {
+            const modal = document.getElementById('mobileInfoModal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        };
+
+        function renderCard(s) {
+            const name = s.name || s.scheme_name || s.title || 'Untitled';
+            const org = s.org || s.organization || s.department || '';
+            const amount = s.amount || s.funding_amount || '';
+            const desc = s.description || '';
+            const url = s.url || s.link || s.website || s.apply_link || '#';
+            const prob = s.probability || 'Medium';
+            const icon = s.icon || 'fa-lightbulb';
+            const deadline = s.days_left || 'Rolling';
+
+            const probClass = prob === 'High' ? 'prob-high' : (prob === 'Medium' ? 'prob-med' : 'prob-low');
+
+            return `
+                <div class="funding-card-mobile animate-in">
+                    <div class="card-header-mobile">
+                        <div class="scheme-icon-sm">
+                            <i class="fa-solid ${icon}"></i>
+                        </div>
+                        <span class="probability-badge ${probClass}">${prob} Match</span>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 2px;">${name}</h3>
+                        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px;">${org}</p>
+                        <div class="tag-row-mobile">
+                            <div class="tag-pill-sm"><i class="fa-solid fa-dollar-sign"></i> ${amount}</div>
+                            <div class="tag-pill-sm"><i class="fa-regular fa-calendar"></i> ${deadline}</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 0.85rem; color: var(--text-secondary); line-height: 1.5;">${desc}</p>
+                    <div class="action-row-mobile" style="flex-wrap: wrap;">
+                        <button class="btn-mobile btn-mobile-outline" style="flex: 0 0 calc(50% - 5px);" onclick="openInfoModal('${name.replace(/'/g, "\\'")}', '${org.replace(/'/g, "\\'")}', '${desc.replace(/'/g, "\\'")}', '${icon}', '${url}')">
+                             <i class="fa-solid fa-circle-info"></i> Info</button>
+                        <button class="btn-mobile btn-mobile-outline" style="flex: 0 0 calc(50% - 5px);" onclick="alert('Analysis: ${desc.replace(/'/g, "\\'")}')">✨ Explain</button>
+                        <a href="${url}" target="_blank" class="btn-mobile btn-mobile-primary" style="flex: 0 0 100%; margin-top: 10px; text-decoration: none;">Proceed to Application</a>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterAndRender() {
+            let filtered = allSchemes;
+            
+            if (activeSector !== 'all') {
+                filtered = filtered.filter(s => (s.category || '').includes(activeSector) || (s.sector || '').includes(activeSector));
+            }
+
+            if (searchInput.value.trim()) {
+                const q = searchInput.value.toLowerCase();
+                filtered = filtered.filter(s => JSON.stringify(s).toLowerCase().includes(q));
+            }
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);"><i class="fa-solid fa-database fa-2x mb-2"></i><p>No matches found.</p></div>';
+            } else {
+                grid.innerHTML = filtered.map(renderCard).join('');
+            }
+        }
+
+        window.setSectorFilter = function(el, sector) {
+            document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            activeSector = sector;
+            filterAndRender();
+        };
+
+        searchInput.addEventListener('input', () => {
+             filterAndRender();
+        });
+
+        (async () => {
+            try {
+                const schemes = await DB.getSchemes();
+                if (schemes && schemes.length > 0) {
+                    allSchemes = schemes;
+                    filterAndRender();
+                } else {
+                    grid.innerHTML = '<p style="text-align:center; padding: 20px;">No data in database.</p>';
+                }
+            } catch (e) {
+                grid.innerHTML = '<p style="text-align:center; padding: 20px; color: #f87171;">Connection error: ' + e.message + '</p>';
+            }
+        })();
+    </script>
+
+    <!-- Mobile Navigation -->
+    <nav class="glass-panel">
+        <div class="nav-links">
+            <a href="../dashboard_mobile.html"><i class="fa-solid fa-house"></i><span>Home</span></a>
+            <a href="news_reels_mobile.html"><i class="fa-solid fa-clapperboard"></i><span>Reels</span></a>
+            <a href="vc_forge_mobile.html"><i class="fa-solid fa-microchip"></i><span>Forge</span></a>
+            <a href="funding_mobile.html" class="active"><i class="fa-solid fa-magnifying-glass-dollar"></i><span>Funding</span></a>
+            <a href="global_policies_mobile.html"><i class="fa-solid fa-file-contract"></i><span>Policies</span></a>
+        </div>
+    </nav>
+</body>
+
+</html>

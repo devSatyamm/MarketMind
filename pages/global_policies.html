@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../js/device_detector.js"></script>
+    <title>MarketMind | Global Rules & Policies</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../style.css">
+    <style>
+        .policy-grid {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 1.75rem;
+            align-items: flex-start;
+        }
+
+        .filter-sidebar {
+            position: sticky;
+            top: calc(var(--header-h) + 1.5rem);
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 1.5rem;
+        }
+
+        .filter-group {
+            margin-bottom: 1.75rem;
+        }
+
+        .filter-group-title {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.85rem;
+        }
+
+        .country-pill {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--r-md);
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            transition: all 0.18s;
+        }
+
+        .country-pill:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .country-pill.active {
+            background: rgba(99, 102, 241, 0.12);
+            color: #a5b4fc;
+            border-left: 3px solid var(--accent-indigo);
+            padding-left: calc(0.75rem - 3px);
+        }
+
+        .country-flag {
+            font-size: 1.15rem;
+        }
+
+        /* policy cards */
+        .policy-section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.25rem;
+            margin-top: 2rem;
+        }
+
+        .policy-section-header:first-of-type {
+            margin-top: 0;
+        }
+
+        .policy-section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .policy-cards {
+            display: flex;
+            flex-direction: column;
+            gap: 0.9rem;
+        }
+
+        .policy-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .policy-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateX(3px);
+        }
+
+        .policy-card-icon {
+            min-width: 42px;
+            height: 42px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+        }
+
+        .policy-card-icon.red {
+            background: rgba(239, 68, 68, 0.12);
+            color: #f87171;
+        }
+
+        .policy-card-icon.yellow {
+            background: rgba(245, 158, 11, 0.12);
+            color: #fbbf24;
+        }
+
+        .policy-card-icon.green {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+        }
+
+        .policy-card-icon.blue {
+            background: rgba(59, 130, 246, 0.12);
+            color: #60a5fa;
+        }
+
+        .policy-card-body {
+            flex: 1;
+        }
+
+        .policy-card-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .policy-card-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .policy-card-desc {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .policy-impact {
+            min-width: 56px;
+            text-align: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .impact-high {
+            color: #f87171;
+        }
+
+        .impact-medium {
+            color: #fbbf24;
+        }
+
+        .impact-low {
+            color: #34d399;
+        }
+
+        .search-large {
+            width: 100%;
+            padding: 0.9rem 1.25rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-lg);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .search-large:focus {
+            outline: none;
+            border-color: var(--accent-indigo);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .stat-strip {
+            display: flex;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-strip-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--r-md);
+            padding: 0.75rem 1.25rem;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .stat-strip-num {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .stat-strip-lbl {
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            margin-top: 0.15rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header class="main-header">
+        <a href="../index.html" class="logo">
+            <span class="logo-icon-sm"><i class="fa-solid fa-cube"></i></span>
+            MARKET<span class="logo-sub">MIND</span>
+        </a>
+        <div class="search-bar">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search policies, regulations…">
+        </div>
+        <nav class="nav-menu">
+            <a href="../dashboard.html" class="nav-item" data-i18n="nav.dashboard">Dashboard</a>
+            <a href="strategy.html" class="nav-item" data-i18n="nav.simulations">Simulations</a>
+            <a href="funding.html" class="nav-item" data-i18n="nav.funding">Funding</a>
+            <a href="vc_forge.html" class="nav-item" data-i18n="nav.vcforge">VC Forge</a>
+            <a href="global_policies.html" class="nav-item active" data-i18n="nav.policies">Policies</a>
+        </nav>
+        <div class="flex items-center gap-3">
+            <button class="btn btn-icon btn-ghost relative">
+                <i class="fa-regular fa-bell"></i>
+                <span class="notif-dot"></span>
+            </button>
+            <button class="btn btn-icon btn-ghost"><i class="fa-solid fa-gear"></i></button>
+            <a href="profile.html" class="profile-avatar-sm">
+                <img src="https://ui-avatars.com/api/?name=Grey+Matter&background=6366f1&color=fff&size=128" alt="Profile">
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1><i class="fa-solid fa-globe" style="color:var(--accent-blue); margin-right:0.4rem;"></i>Global Rules
+                    &amp; Policies</h1>
+                <p>190+ countries · 2,400+ policies · Updated weekly by our AI research engine</p>
+            </div>
+            <div class="flex gap-3">
+                <button class="btn btn-outline"><i class="fa-solid fa-filter"></i> Filter</button>
+                <button class="btn btn-primary"><i class="fa-solid fa-arrow-down-to-line"></i> Export</button>
+            </div>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="stat-strip">
+            <div class="stat-strip-item">
+                <div class="stat-strip-num">2,411</div>
+                <div class="stat-strip-lbl">Policies Tracked</div>
+            </div>
+            <div class="stat-strip-item">
+                <div class="stat-strip-num" style="color:var(--accent-red);">38</div>
+                <div class="stat-strip-lbl">New This Week</div>
+            </div>
+            <div class="stat-strip-item">
+                <div class="stat-strip-num" style="color:var(--accent-yellow);">14</div>
+                <div class="stat-strip-lbl">Critical Changes</div>
+            </div>
+            <div class="stat-strip-item">
+                <div class="stat-strip-num" style="color:var(--accent-green);">190</div>
+                <div class="stat-strip-lbl">Countries</div>
+            </div>
+        </div>
+
+        <!-- Search -->
+        <input class="search-large" type="search" placeholder="🔎  Search for a policy, law, regulation, or country…"
+            oninput="filterPolicies(this.value)">
+
+        <div class="policy-grid" id="policy-grid">
+
+            <!-- Sidebar -->
+            <aside class="filter-sidebar">
+                <div class="text-sm font-bold mb-4">Browse by Country</div>
+
+                <div class="filter-group">
+                    <div class="filter-group-title">Asia Pacific</div>
+                    <div class="country-pill active" onclick="setCountry(this,'india')"><span
+                            class="country-flag">🇮🇳</span> India</div>
+                    <div class="country-pill" onclick="setCountry(this,'china')"><span class="country-flag">🇨🇳</span>
+                        China</div>
+                    <div class="country-pill" onclick="setCountry(this,'japan')"><span class="country-flag">🇯🇵</span>
+                        Japan</div>
+                    <div class="country-pill" onclick="setCountry(this,'singapore')"><span
+                            class="country-flag">🇸🇬</span> Singapore</div>
+                    <div class="country-pill" onclick="setCountry(this,'australia')"><span
+                            class="country-flag">🇦🇺</span> Australia</div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-group-title">Americas</div>
+                    <div class="country-pill" onclick="setCountry(this,'us')"><span class="country-flag">🇺🇸</span>
+                        United States</div>
+                    <div class="country-pill" onclick="setCountry(this,'canada')"><span class="country-flag">🇨🇦</span>
+                        Canada</div>
+                    <div class="country-pill" onclick="setCountry(this,'brazil')"><span class="country-flag">🇧🇷</span>
+                        Brazil</div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-group-title">Europe</div>
+                    <div class="country-pill" onclick="setCountry(this,'eu')"><span class="country-flag">🇪🇺</span>
+                        European Union</div>
+                    <div class="country-pill" onclick="setCountry(this,'uk')"><span class="country-flag">🇬🇧</span>
+                        United Kingdom</div>
+                    <div class="country-pill" onclick="setCountry(this,'germany')"><span
+                            class="country-flag">🇩🇪</span> Germany</div>
+                </div>
+
+                <div class="filter-group">
+                    <div class="filter-group-title">Middle East & Africa</div>
+                    <div class="country-pill" onclick="setCountry(this,'uae')"><span class="country-flag">🇦🇪</span>
+                        UAE</div>
+                    <div class="country-pill" onclick="setCountry(this,'saudi')"><span class="country-flag">🇸🇦</span>
+                        Saudi Arabia</div>
+                    <div class="country-pill" onclick="setCountry(this,'nigeria')"><span
+                            class="country-flag">🇳🇬</span> Nigeria</div>
+                </div>
+
+                <div class="section-divider"></div>
+                <div class="text-sm font-bold mb-3 mt-2">Filter by Type</div>
+                <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                    <label
+                        style="display:flex; align-items:center; gap:0.6rem; font-size:0.875rem; cursor:pointer; color:var(--text-muted);">
+                        <input type="checkbox" checked> <span style="color:#f87171;">🚫 Bans & Restrictions</span>
+                    </label>
+                    <label
+                        style="display:flex; align-items:center; gap:0.6rem; font-size:0.875rem; cursor:pointer; color:var(--text-muted);">
+                        <input type="checkbox" checked> <span style="color:#fbbf24;">💰 Tariffs & Duties</span>
+                    </label>
+                    <label
+                        style="display:flex; align-items:center; gap:0.6rem; font-size:0.875rem; cursor:pointer; color:var(--text-muted);">
+                        <input type="checkbox" checked> <span style="color:#60a5fa;">📋 Compliance & Licensing</span>
+                    </label>
+                    <label
+                        style="display:flex; align-items:center; gap:0.6rem; font-size:0.875rem; cursor:pointer; color:var(--text-muted);">
+                        <input type="checkbox" checked> <span style="color:#34d399;">✅ Incentives & Subsidies</span>
+                    </label>
+                </div>
+            </aside>
+
+            <!-- Main policy list -->
+            <main id="policy-main">
+                <!-- content injected by JS -->
+            </main>
+
+        </div><!-- /grid -->
+    </div>
+
+    <script src="../js/i18n.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../script.js"></script>
+    <script>
+        const POLICIES = {
+            india: {
+                flag: '🇮🇳', name: 'India',
+                sections: [
+                    {
+                        title: 'Bans & Restrictions', icon: '🚫', iconClass: 'red',
+                        items: [
+                            { title: 'Drone Import Ban — Pre-approved List Only', impact: 'high', updated: 'Jan 2026', type: 'Restriction', desc: 'Commercial drones manufactured outside India require DGCA approval on a pre-approved vendor list. Over 90% of foreign drone brands are currently unlisted. Affects robotics, delivery, agri-drone startups.' },
+                            { title: 'Cryptocurrency — Unregulated but Taxed at 30%', impact: 'high', updated: 'Mar 2025', type: 'Restriction', desc: 'Crypto assets are not banned but are taxed at flat 30% with no loss set-off allowed. TDS of 1% deducted at source for all crypto-to-crypto transactions above ₹50,000.' },
+                            { title: 'Foreign Law Firm Offices — Banned', impact: 'medium', updated: 'Feb 2025', type: 'Ban', desc: 'International law firms cannot open offices in India or practice Indian law. They may advise on foreign or international law only. Relevant for SaaS companies offering legal-tech in India.' },
+                            { title: 'Multi-brand Retail FDI Cap at 51%', impact: 'high', updated: 'Dec 2024', type: 'Restriction', desc: 'Foreign direct investment in multi-brand retail is capped at 51% and requires state government approval. E-commerce is governed separately under Press Note 2 — inventory-based models are disallowed.' },
+                        ]
+                    },
+                    {
+                        title: 'Tariffs & Duties', icon: '💰', iconClass: 'yellow',
+                        items: [
+                            { title: 'Laptop Import — Restricted Import Licensing', impact: 'high', updated: 'Nov 2025', type: 'Import Control', desc: 'Laptop and tablet imports by commercial entities now require Import Management System (IMS) registration. Designed to push domestic manufacturing under PLI Scheme for IT Hardware.' },
+                            { title: 'Electronics Components — BCD Raised to 25%', impact: 'medium', updated: 'Jul 2025', type: 'Tariff', desc: 'Basic customs duty on PCBs, resistors, capacitors, and other electronic components raised from 10–15% to 25% in Budget 2025. Significantly affects hardware-first startup COGS.' },
+                            { title: 'Mobile Phones — 20% BCD Maintained', impact: 'medium', updated: 'Feb 2025', type: 'Tariff', desc: '20% basic customs duty on imported finished mobile phones maintained to protect Apple/Samsung India manufacturing. Affects grey-market risk for mobile accessory sellers.' },
+                        ]
+                    },
+                    {
+                        title: 'Compliance & Licensing', icon: '📋', iconClass: 'blue',
+                        items: [
+                            { title: 'Digital Personal Data Protection Act 2023 (DPDP)', impact: 'high', updated: 'Aug 2025', type: 'Data Law', desc: 'All platforms processing Indian citizens\' personal data must appoint a Data Protection Officer, maintain data only for necessary duration, and comply with consent requirements. Penalties up to ₹250Cr for breaches.' },
+                            { title: 'SEBI AIF & VC Registration Requirements', impact: 'medium', updated: 'May 2025', type: 'Financial', desc: 'Funds raising money from investors in India (even for investing abroad) must register as Alternative Investment Funds with SEBI. Minimum corpus ₹20Cr, 3-year lock-in for Category II AIFs.' },
+                            { title: 'Telecom Startups — TRAI License Mandatory', impact: 'medium', updated: 'Jan 2026', type: 'License', desc: 'Any application using telecommunications infrastructure (VOIP, SMS aggregation, RCS services) must hold a Unified License from TRAI. Processing time: 6–18 months.' },
+                            { title: 'Online Gaming — 28% GST on Face Value', impact: 'high', updated: 'Oct 2023', type: 'Tax', desc: 'Supreme Court upheld 28% GST on the full face value of all online gaming bets including skill games. Effectively makes most real-money gaming business models unviable. Several unicorns shut real-money vertical.' },
+                        ]
+                    },
+                    {
+                        title: 'Incentives & Subsidies', icon: '✅', iconClass: 'green',
+                        items: [
+                            { title: 'Production Linked Incentive (PLI) Scheme', impact: 'low', updated: 'Apr 2025', type: 'Subsidy', desc: '4–6% incentive on incremental sales vs FY2019 baseline for 14 identified sectors including electronics, pharmaceuticals, auto components, and food processing. Total outlay: ₹2 lakh crore.' },
+                            { title: 'Startup India — 80-IAC Tax Holiday', impact: 'low', updated: 'Ongoing', type: 'Tax Benefit', desc: '100% income tax exemption for 3 consecutive years out of first 10 years of incorporation. Applicable to DPIIT-recognised startups with turnover below ₹100Cr.' },
+                            { title: 'National Quantum Mission — ₹6,000Cr Fund', impact: 'low', updated: 'Jun 2025', type: 'Grant', desc: 'India\'s first quantum computing national mission funds startups and research institutions working on quantum hardware, software algorithms, and quantum communication by 2031.' },
+                        ]
+                    }
+                ]
+            },
+            us: {
+                flag: '🇺🇸', name: 'United States',
+                sections: [
+                    {
+                        title: 'Bans & Restrictions', icon: '🚫', iconClass: 'red',
+                        items: [
+                            { title: 'TikTok / ByteDance Divestment Law', impact: 'high', updated: 'Jan 2025', type: 'Ban', desc: 'US law requires ByteDance to divest TikTok by Jan 19, 2025 or face a ban. Enforced by CFIUS. Sets a precedent for any app with Chinese backing and US user data. Currently under legal challenge.' },
+                            { title: 'Semiconductor Export Controls — A100/H100 Chips', impact: 'high', updated: 'Oct 2025', type: 'Export Control', desc: 'BIS Entity List restrictions prevent export of advanced AI chips (A100, H100, MI300) to China, Russia, and 40+ countries without specific license. Affects AI cloud companies operating globally.' },
+                            { title: 'AI in Hiring — EEOC Guidance', impact: 'medium', updated: 'Sep 2025', type: 'Regulation', desc: 'AI hiring tools that produce disparate impact on protected classes violate Title VII even without discriminatory intent. EEOC has begun enforcement actions against two major HR-tech vendors.' },
+                        ]
+                    },
+                    {
+                        title: 'Tariffs & Duties', icon: '💰', iconClass: 'yellow',
+                        items: [
+                            { title: 'Section 301 Tariffs on Chinese Goods — Up to 145%', impact: 'high', updated: 'May 2025', type: 'Tariff', desc: 'Tariffs on Chinese imports raised to 145% across thousands of product categories under Section 301. EVs face 100% tariff. Solar cells: 50%. Affects any hardware company with China-based supply chain.' },
+                            { title: 'Steel & Aluminium — Section 232 Tariffs at 25%', impact: 'medium', updated: 'Mar 2025', type: 'Tariff', desc: '25% tariffs on imported steel and aluminium from most countries reinstated under Section 232. EU, Canada, Mexico exemptions under USMCA but subject to quota monitoring.' },
+                        ]
+                    },
+                    {
+                        title: 'Compliance & Licensing', icon: '📋', iconClass: 'blue',
+                        items: [
+                            { title: 'Executive Order on AI — Safety & Transparency Rules', impact: 'high', updated: 'Oct 2024', type: 'AI Policy', desc: 'Federal agencies must assess AI use. Developers of AI models exceeding 10^26 FLOPS must report training details to the government. NIST framework adoption required for federal procurement.' },
+                            { title: 'SEC Cybersecurity Disclosure Rules', impact: 'medium', updated: 'Dec 2023', type: 'Compliance', desc: 'Public companies must disclose material cybersecurity incidents within 4 business days and annually report on cybersecurity risk governance. Affects SaaS and fintech companies seeking to go public.' },
+                            { title: 'CCPA and State Privacy Patchwork', impact: 'medium', updated: 'Jan 2026', type: 'Data Law', desc: 'California CCPA, Virginia CDPA, Colorado CPA, and 15 other state laws create a patchwork of data privacy requirements. No federal privacy law exists. Multi-state compliance cost: $200K–$2M/year for mid-sized startups.' },
+                        ]
+                    },
+                    {
+                        title: 'Incentives & Subsidies', icon: '✅', iconClass: 'green',
+                        items: [
+                            { title: 'CHIPS and Science Act — $52B Semiconductor Grants', impact: 'low', updated: 'Ongoing', type: 'Grant', desc: 'CHIPS Act provides $39B in manufacturing grants and $13B in R&D for US semiconductor production. Companies receiving funds cannot expand production in China for 10 years.' },
+                            { title: 'Inflation Reduction Act — Clean Energy Tax Credits', impact: 'low', updated: 'Ongoing', type: 'Tax Credit', desc: 'Up to 30% investment tax credit for clean energy installations. Also 10% bonus for projects in designated energy communities. Applies to solar, wind, battery storage, and EV charging infrastructure.' },
+                        ]
+                    }
+                ]
+            },
+            eu: {
+                flag: '🇪🇺', name: 'European Union',
+                sections: [
+                    {
+                        title: 'Bans & Restrictions', icon: '🚫', iconClass: 'red',
+                        items: [
+                            { title: 'EU AI Act — High-Risk AI System Requirements', impact: 'high', updated: 'Aug 2024', type: 'AI Regulation', desc: 'AI systems in critical infrastructure, healthcare, biometric ID, employment, and credit must undergo conformity assessment, maintain human oversight, and meet transparency requirements by 2026–2027 (phased).' },
+                            { title: 'Social Media Algorithm Transparency (DSA)', impact: 'high', updated: 'Feb 2024', type: 'Regulation', desc: 'Digital Services Act mandates very large platforms (45M+ EU users) disclose recommender algorithm logic, allow algorithm-free feeds, conduct algorithmic risk audits. Non-compliance: 6% global revenue.' },
+                            { title: 'Real-time Remote Biometric Surveillance — Banned', impact: 'high', updated: 'Aug 2024', type: 'Ban', desc: 'EU AI Act prohibits real-time facial recognition in public spaces by law enforcement (with narrow exceptions). Private sector use also severely restricted. No facial profiling for emotion detection.' },
+                        ]
+                    },
+                    {
+                        title: 'Tariffs & Duties', icon: '💰', iconClass: 'yellow',
+                        items: [
+                            { title: 'Carbon Border Adjustment Mechanism (CBAM)', impact: 'high', updated: 'Jan 2026', type: 'Carbon Tax', desc: 'Importers of carbon-intensive goods (steel, cement, aluminium, fertilisers, electricity) must purchase CO₂ certificates matching carbon price in EU ETS. Full implementation by Jan 2026. Affects global supply chains.' },
+                            { title: 'EV Tariffs on China-made Cars — Up to 45%', impact: 'medium', updated: 'Oct 2024', type: 'Tariff', desc: 'Additional tariffs of 7.8–35.3% imposed on Chinese-made EVs following anti-subsidy investigation (on top of 10% existing MFN duty). BYD: 17%, SAIC: 35.3%, Geely: 18.8%.' },
+                        ]
+                    },
+                    {
+                        title: 'Compliance & Licensing', icon: '📋', iconClass: 'blue',
+                        items: [
+                            { title: 'GDPR — Enhanced Enforcement 2025', impact: 'high', updated: 'Jan 2025', type: 'Data Law', desc: 'GDPR fines increased significantly in 2024–25 enforcement wave. Meta fined €1.2B, TikTok €345M. DPAs now coordinating cross-border investigations. Any startup with EU users must comply from day 1.' },
+                            { title: 'Digital Markets Act (DMA) — Gatekeeper Rules', impact: 'medium', updated: 'Mar 2024', type: 'Regulation', desc: 'Designated gatekeepers (Apple, Google, Meta, Microsoft, Amazon, Booking.com) must allow interoperability and fair access. Creates opportunities for startups to challenge incumbents via new DMA-mandated APIs.' },
+                            { title: 'MiCA — Crypto Asset Regulation in Force', impact: 'medium', updated: 'Dec 2024', type: 'Financial', desc: 'Markets in Crypto-Assets Regulation provides a uniform licensing framework for crypto exchanges, wallet providers, and stablecoin issuers across all 27 EU member states. License from one country covers entire EU.' },
+                        ]
+                    },
+                    {
+                        title: 'Incentives & Subsidies', icon: '✅', iconClass: 'green',
+                        items: [
+                            { title: 'Horizon Europe — €95.5B R&D Programme', impact: 'low', updated: 'Ongoing', type: 'Grant', desc: 'Europe\'s flagship research and innovation funding programme. Startups can access EIC (European Innovation Council) grants up to €2.5M plus equity investment of up to €15M with no dilution on grant portion.' },
+                            { title: 'European Green Deal — €1 Trillion by 2030', impact: 'low', updated: 'Ongoing', type: 'Investment', desc: 'Massive investment in green transition creates procurement and grant opportunities in clean energy, sustainable transport, clean hydrogen, and circular economy for startups with demonstrable climate impact.' },
+                        ]
+                    }
+                ]
+            },
+            china: {
+                flag: '🇨🇳', name: 'China',
+                sections: [
+                    {
+                        title: 'Bans & Restrictions', icon: '🚫', iconClass: 'red',
+                        items: [
+                            { title: 'VIE Structure — Increasingly Restricted', impact: 'high', updated: 'Dec 2024', type: 'Restriction', desc: 'The Variable Interest Entity structure used by Alibaba, JD, DiDi etc. to list overseas is under regulatory scrutiny. CSRC requires approval for offshore listings of Chinese internet companies with sensitive data.' },
+                            { title: 'Tech Company Foreign Investment — Negative List', impact: 'high', updated: 'Jan 2026', type: 'FDI Restriction', desc: 'Foreign ownership in internet, media, telecom, and AI sectors restricted or prohibited. JVs allowed in some cases but Chinese partner must hold majority control. Affects all market-entry strategies.' },
+                            { title: 'AI Generated Content — CAC Registration Required', impact: 'medium', updated: 'Sep 2023', type: 'AI Regulation', desc: 'Generative AI services (like ChatGPT equivalents) must register with CAC, ensure content aligns with "socialist values", use watermarking, and verify user identity with real-name authentication.' },
+                        ]
+                    },
+                    {
+                        title: 'Tariffs & Duties', icon: '💰', iconClass: 'yellow',
+                        items: [
+                            { title: 'Retaliatory Tariffs on US Goods — 125%', impact: 'high', updated: 'Apr 2025', type: 'Tariff', desc: 'China raised tariffs on US imports to 125% in response to Trump 145% tariffs. Affects US agricultural products, EVs, chemicals, and manufacturing equipment. Trade decoupling accelerating.' },
+                        ]
+                    },
+                    {
+                        title: 'Compliance & Licensing', icon: '📋', iconClass: 'blue',
+                        items: [
+                            { title: 'Data Security Law + PIPL — Cross-border Data Prohibited', impact: 'high', updated: 'Ongoing', type: 'Data Law', desc: 'China\'s PIPL prohibits transferring Chinese citizens\' personal data abroad without passing a government security assessment (for large datasets) or standard contract approval. Critical for any cloud business.' },
+                            { title: 'ICP License — Required for All Websites', impact: 'medium', updated: 'Ongoing', type: 'License', desc: 'Any website or app operating in China must obtain an Internet Content Provider (ICP) license from MIIT. Only available to Chinese legal entities. Foreign companies must establish a WFOE or JV.' },
+                        ]
+                    },
+                    {
+                        title: 'Incentives & Subsidies', icon: '✅', iconClass: 'green',
+                        items: [
+                            { title: 'High-Tech Enterprise Tax Incentive — 15% Rate', impact: 'low', updated: 'Ongoing', type: 'Tax Benefit', desc: 'Companies certified as National High and New Technology Enterprises (HNTE) pay 15% corporate income tax instead of the standard 25%. Requires meeting R&D spending, IP ownership, and revenue thresholds.' },
+                            { title: 'Special Economic Zones — Shenzhen, HKFTZ', impact: 'low', updated: 'Ongoing', type: 'Incentive', desc: 'SEZs offer reduced tax rates, simplified import/export procedures, and access to government procurement. Hainan FTP offers zero corporate tax on encouraged industries by 2025.' },
+                        ]
+                    }
+                ]
+            },
+            uk: {
+                flag: '🇬🇧', name: 'United Kingdom',
+                sections: [
+                    {
+                        title: 'Bans & Restrictions', icon: '🚫', iconClass: 'red',
+                        items: [
+                            { title: 'Online Safety Act — Illegal Content Duties', impact: 'high', updated: 'Jan 2024', type: 'Regulation', desc: 'Platforms must remove illegal content swiftly, prevent highest-harm content, protect children, and be transparent about content moderation. Ofcom can fine up to £18M or 10% of global revenue.' },
+                        ]
+                    },
+                    {
+                        title: 'Compliance & Licensing', icon: '📋', iconClass: 'blue',
+                        items: [
+                            { title: 'UK GDPR + Data Protection Act 2018', impact: 'medium', updated: 'Ongoing', type: 'Data Law', desc: 'Post-Brexit, UK retained GDPR via UK GDPR. ICO enforces independently from EU. Data transferred between EU and UK operates under "adequacy" agreement — currently in place but subject to review.' },
+                            { title: 'FCA Fintech Sandbox — Regulatory Permissions', impact: 'low', updated: 'Ongoing', type: 'License', desc: 'FCA Regulatory Sandbox allows fintech startups to test innovative products with regulatory permissions for up to 12 months. Pathway to full authorisation. Global fintech leaders use UK as primary fintech hub.' },
+                        ]
+                    },
+                    {
+                        title: 'Incentives & Subsidies', icon: '✅', iconClass: 'green',
+                        items: [
+                            { title: 'R&D Tax Credit — Enhanced SME Scheme', impact: 'low', updated: 'Apr 2024', type: 'Tax Credit', desc: 'SMEs can claim 27p for every £1 of qualifying R&D spend (if loss-making). A new merged R&D scheme at 20% above-line credit for large companies applies from Apr 2024. Strong for deep-tech startups.' },
+                            { title: 'SEIS & EIS — Startup Investment Incentives', impact: 'low', updated: 'Ongoing', type: 'Investment', desc: 'SEIS gives investors 50% income tax relief on up to £250K invested. EIS gives 30% relief on up to £1M. Both exempt capital gains. Makes UK extremely attractive for early-stage fundraising.' },
+                        ]
+                    }
+                ]
+            },
+            uae: {
+                flag: '🇦🇪', name: 'United Arab Emirates',
+                sections: [
+                    {
+                        title: 'Bans & Restrictions', icon: '🚫', iconClass: 'red',
+                        items: [
+                            { title: 'VoIP Services — Restricted (Skype, WhatsApp Calls)', impact: 'high', updated: 'Ongoing', type: 'Restriction', desc: 'VoIP calls via Skype, WhatsApp, and FaceTime are restricted for most users. Licensed telecom providers (du, Etisalat) hold monopoly on voice calls. Affects any product relying on VoIP features for UAE users.' },
+                        ]
+                    },
+                    {
+                        title: 'Compliance & Licensing', icon: '📋', iconClass: 'blue',
+                        items: [
+                            { title: 'Dubai DIFC / ADGM Financial License', impact: 'medium', updated: 'Ongoing', type: 'License', desc: 'Financial services companies in Dubai International Financial Centre or Abu Dhabi Global Market operate under English common law with independent regulators (DFSA/FSRA). Crypto licensing available here.' },
+                            { title: 'UAE Personal Data Protection Law (PDPL)', impact: 'medium', updated: 'Jan 2026', type: 'Data Law', desc: 'UAE Federal PDPL requires consent-based data processing, cross-border transfer restrictions, and appointment of a Data Protection Officer. Applies to all companies processing UAE resident data.' },
+                        ]
+                    },
+                    {
+                        title: 'Incentives & Subsidies', icon: '✅', iconClass: 'green',
+                        items: [
+                            { title: '0% Corporate Tax in Free Zones', impact: 'low', updated: 'Ongoing', type: 'Tax Benefit', desc: 'Despite UAE\'s 9% corporate tax since 2023, companies registered in approved free zones (DIFC, ADGM, DMCC) are exempt if qualifying conditions met. Ideal structuring for international businesses.' },
+                            { title: 'Golden Visa for Entrepreneurs & Investors', impact: 'low', updated: 'Ongoing', type: 'Immigration', desc: '10-year UAE Golden Visa for founders of companies with AED 500K+ valuation, real estate investors, and highly skilled professionals. No requirement to live in UAE for majority of year.' },
+                        ]
+                    }
+                ]
+            }
+        };
+
+        // Fill remaining country stubs with placeholder
+        ['japan', 'singapore', 'australia', 'canada', 'brazil', 'germany', 'saudi', 'nigeria'].forEach(c => {
+            if (!POLICIES[c]) {
+                POLICIES[c] = {
+                    flag: { japan: '🇯🇵', singapore: '🇸🇬', australia: '🇦🇺', canada: '🇨🇦', brazil: '🇧🇷', germany: '🇩🇪', saudi: '🇸🇦', nigeria: '🇳🇬' }[c],
+                    name: c.charAt(0).toUpperCase() + c.slice(1),
+                    sections: [
+                        {
+                            title: 'Coming Soon', icon: '🔄', iconClass: 'blue', items: [
+                                { title: 'Policy database being compiled by our AI', impact: 'low', updated: 'Q2 2026', type: 'Upcoming', desc: 'Our research engine is actively compiling and verifying policies for this country. Check back soon or explore countries already available.' }
+                            ]
+                        }
+                    ]
+                };
+            }
+        });
+
+        let currentCountry = 'india';
+
+        function renderCountry(code) {
+            const data = POLICIES[code];
+            if (!data) return;
+            const main = document.getElementById('policy-main');
+            main.innerHTML = `
+            <div class="flex items-center gap-2 mb-4" style="color:var(--text-muted); font-size:0.85rem;">
+                <span style="font-size:1.4rem;">${data.flag}</span>
+                <span class="font-bold text-primary" style="font-size:1rem;">${data.name}</span>
+                <span>·</span>
+                <span>${data.sections.reduce((a, s) => a + s.items.length, 0)} policies</span>
+            </div>
+            ${data.sections.map(s => `
+                <div class="policy-section-header">
+                    <div class="policy-section-title">
+                        <div class="policy-card-icon ${s.iconClass}" style="min-width:32px; height:32px; font-size:0.9rem;">${s.icon}</div>
+                        ${s.title}
+                    </div>
+                    <span class="text-xs text-muted">${s.items.length} policies</span>
+                </div>
+                <div class="policy-cards">
+                    ${s.items.map(p => `
+                        <div class="policy-card">
+                            <div class="policy-card-icon ${s.iconClass}">${s.icon}</div>
+                            <div class="policy-card-body">
+                                <div class="policy-card-title">${p.title}</div>
+                                <div class="policy-card-meta">
+                                    <span><i class="fa-regular fa-clock"></i> Updated ${p.updated}</span>
+                                    <span><i class="fa-regular fa-tag"></i> ${p.type}</span>
+                                </div>
+                                <div class="policy-card-desc">${p.desc}</div>
+                            </div>
+                            <div class="policy-impact impact-${p.impact}">
+                                ${p.impact === 'high' ? '🔴 HIGH' : p.impact === 'medium' ? '🟡 MED' : '🟢 LOW'}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('')}
+        `;
+        }
+
+        function setCountry(el, code) {
+            document.querySelectorAll('.country-pill').forEach(p => p.classList.remove('active'));
+            el.classList.add('active');
+            currentCountry = code;
+            renderCountry(code);
+        }
+
+        function filterPolicies(q) {
+            if (!q) { renderCountry(currentCountry); return; }
+            const lower = q.toLowerCase();
+            const allItems = [];
+            Object.values(POLICIES).forEach(country => {
+                country.sections.forEach(s => {
+                    s.items.forEach(item => {
+                        if (item.title.toLowerCase().includes(lower) || item.desc.toLowerCase().includes(lower) || country.name.toLowerCase().includes(lower)) {
+                            allItems.push({ ...item, flag: country.flag, countryName: country.name, icon: s.icon, iconClass: s.iconClass });
+                        }
+                    });
+                });
+            });
+            const main = document.getElementById('policy-main');
+            if (!allItems.length) { main.innerHTML = '<div class="text-center text-muted" style="padding:3rem;">No policies found for that search.</div>'; return; }
+            main.innerHTML = `
+            <div class="text-sm text-muted mb-3">${allItems.length} results for "${q}"</div>
+            <div class="policy-cards">
+                ${allItems.map(p => `
+                    <div class="policy-card">
+                        <div class="policy-card-icon ${p.iconClass}">${p.icon}</div>
+                        <div class="policy-card-body">
+                            <div class="policy-card-title">${p.title}</div>
+                            <div class="policy-card-meta">
+                                <span>${p.flag} ${p.countryName}</span>
+                                <span><i class="fa-regular fa-clock"></i> Updated ${p.updated}</span>
+                                <span><i class="fa-regular fa-tag"></i> ${p.type}</span>
+                            </div>
+                            <div class="policy-card-desc">${p.desc}</div>
+                        </div>
+                        <div class="policy-impact impact-${p.impact}">
+                            ${p.impact === 'high' ? '🔴 HIGH' : p.impact === 'medium' ? '🟡 MED' : '🟢 LOW'}
+                        </div>
+                    </div>
+                `).join('')}
+            </div>`;
+        }
+
+        // Init
+        renderCountry('india');
+    </script>
+</body>
+
+</html>
