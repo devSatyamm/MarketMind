@@ -155,11 +155,10 @@ MarketMind is built for anyone who makes decisions based on economic signals —
 <!-- Replace YOUR_VIDEO_ID with your actual YouTube video ID once uploaded -->
 [![MarketMind Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
 
-▶ **[Click to watch the full demo](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)**
+▶ **[Click to watch the full demo](https://drive.google.com/file/d/1WOJOyLnpEC1fCaOjirC_wKEyNrBqssp1/view?usp=drive_link)**
 
 </div>
 
-> **To update:** Upload your demo video to YouTube, copy the video ID from the URL (e.g. `youtube.com/watch?v=`**`abc123xyz`**), and replace `YOUR_VIDEO_ID` in both places above.
 
 ---
 
