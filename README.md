@@ -1,4 +1,3 @@
-
 <div align="center">
 
 # ⚡ MARKETMIND
@@ -54,6 +53,7 @@ Critical decision-makers — founders, investors, MSMEs — are **flying blind**
 **That's the gap. MarketMind fills it.**
 
 ---
+
 ### 💥 Real Situations. Real Blind Spots.
 
 **Situation 1 — The Founder who didn't see it coming**
@@ -119,16 +119,47 @@ MarketMind is an **agentic economic foresight engine** that converts raw economi
 
 ---
 
-## 🖥️ `DEMO`
+## 🖥️ `LIVE DEMO`
+
+MarketMind is built for anyone who makes decisions based on economic signals — and can't afford to be wrong.
+
+**Who it's for:**
+
+| 👤 Role | 🎯 What They Get |
+|---|---|
+| **Founders** | Know how a rate hike hits your burn rate before it does |
+| **Investors** | Position ahead of macro shocks, not after |
+| **MSMEs** | Discover government schemes you actually qualify for |
+| **Researchers & Students** | Model real economic scenarios with live data |
+
+**What's inside the platform:**
+
+- **Live News Feed** — RSS-powered economic news, filtered by region and topic. Every article is layered with Sakha AI so you can ask anything about it instantly.
+- **Analyse News** — One click gives you a truth score, a clean summary, and a list of markets that could be affected. No more guessing what a headline means for you.
+- **Hotlines** — Hyper-local economic intelligence. Pick any region in India and get news specific to that area — tier 2 cities, rural belts, state-level policies.
+- **Simulations** — Drop in a scenario. Our agents model downstream consequences across sectors in real time using a multi-agent causal chain pipeline.
+- **VC Forage** — Pitch your startup idea to AI judges — Shark Tank style. Live scoring across market size, problem clarity, business model, and execution risk.
+- **Policies** — Government rules, schemes, and regulations in multiple regional Indian languages. Because if a farmer in Telangana can't read a scheme, it doesn't exist for him.
+
+[![Launch App](https://img.shields.io/badge/▶%20LAUNCH%20APP-Live%20Now-ff4444?style=for-the-badge&labelColor=0d0d0d)](https://devsatyamm.github.io/MarketMind/)
+[![Dashboard](https://img.shields.io/badge/📊%20DASHBOARD-Open-F97316?style=for-the-badge&labelColor=0d0d0d)](https://devsatyamm.github.io/MarketMind/dashboard.html)
+
+---
+
+## 🎬 `PRODUCT DEMO`
 
 <div align="center">
 
-<!-- Replace the URL below with your actual dashboard screenshot or screen recording GIF -->
-![MarketMind Dashboard](https://placehold.co/900x500/0d0d0d/F97316?text=📊+MarketMind+Dashboard+%E2%80%94+Drop+Screenshot+Here&font=monospace)
+> Watch MarketMind in action — live news feed, Sakha AI, consequence simulations, VC Forage, and the policies engine.
 
-[![Launch Dashboard](https://img.shields.io/badge/▶%20LAUNCH%20DASHBOARD-Live%20Now-ff4444?style=for-the-badge&labelColor=0d0d0d)](https://devsatyamm.github.io/MarketMind/dashboard.html)
+<!-- Replace YOUR_VIDEO_ID with your actual YouTube video ID once uploaded -->
+[![MarketMind Demo Video](https://img.youtube.com/vi/YOUR_VIDEO_ID/maxresdefault.jpg)](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)
+
+▶ **[Click to watch the full demo](https://www.youtube.com/watch?v=YOUR_VIDEO_ID)**
 
 </div>
+
+> **To update:** Upload your demo video to YouTube, copy the video ID from the URL (e.g. `youtube.com/watch?v=`**`abc123xyz`**), and replace `YOUR_VIDEO_ID` in both places above.
 
 ---
 
@@ -141,7 +172,7 @@ Multi-agent GenAI pipeline that unearths **causal links** between economic event
 Interactive visual timelines showing how a **single policy or market event** ripples through industries, sectors, and portfolios over time. See the flood before it hits.
 
 ### `03` — 🎯 Role-Specific Intelligence
-One platform. Four personas. All personalized.
+One platform. Multiple personas. All personalized.
 
 | 👤 Role | 🎯 What They Get |
 |---|---|
@@ -155,6 +186,15 @@ A curated, **vector-indexed knowledge base** of government and private incentive
 
 ### `05` — 🧪 Scenario Stress-Testing
 Simulation agents run thousands of scenarios per second based on your role and decision paths, benchmarked against **historical market volatility data**.
+
+### `06` — 🤖 Sakha AI
+Every news article is layered with Sakha — our built-in AI assistant. Ask anything about any story, in context, instantly. It already knows the article. You just ask.
+
+### `07` — 🏦 VC Forage
+An AI-powered pitch arena. Submit your startup idea and face a panel of AI judges who evaluate it across market size, problem clarity, business model, and execution risk — with live scoring and detailed feedback.
+
+### `08` — 🌐 Policies in Regional Languages
+Government schemes and policy documents surfaced in multiple Indian regional languages — because access to information shouldn't depend on the language you speak.
 
 ---
 
@@ -282,27 +322,6 @@ We don't report the weather. **We model the flood.**
 
 ---
 
-## 🗺️ `ROADMAP`
-
-```
-PHASE 1 — MVP  ✅  SHIPPED
-├── [x]  Landing page & dashboard
-├── [x]  Role-specific intelligence layer
-└── [x]  Scheme matching engine
-
-PHASE 2 — COMING SOON 🔜
-├── [ ]  Impact Simulation
-│         Real-time ripple visualization for breaking news
-│
-├── [ ]  Location-Based News
-│         Regional economic intelligence, local policies & grants
-│
-└── [ ]  AI Co-Pilot for Pitches
-          Investor-ready pitch builder with AI scoring & feedback
-```
-
----
-
 ## 📁 `PROJECT STRUCTURE`
 
 ```
@@ -333,7 +352,7 @@ MarketMind/
 
 | 🧑‍💻 Name | 🎯 Role | 🔧 What They Built |
 |---|---|---|
-| **Adharv Shine** | AI & APi | Prompt Engineering · LLM API Integration · AI Agent Design |
+| **Adharv Shine** | AI & API | Prompt Engineering · LLM API Integration · AI Agent Design |
 | **Satyam Mishra** | Frontend, Backend & Design Lead | UI/UX Design · Dashboard · Frontend + Backend |
 | **Atharva Neeraj** | Data & Research | Market Research · Financial Analysis · Problem Statement · Docs |
 
