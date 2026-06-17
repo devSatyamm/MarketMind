@@ -365,6 +365,7 @@ MarketMind/
 | 📊 **Dashboard** | https://devsatyamm.github.io/MarketMind/dashboard.html |
 | 🐙 **GitHub** | https://github.com/devSatyamm/MarketMind |
 | 📄 **Pitch Deck** | [MarketMind.pdf](./MarketMind.pdf) |
+| 🐙 **Linkedin** | https://www.linkedin.com/in/satyamofficial/ |
 
 ---
 
